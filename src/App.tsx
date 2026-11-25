@@ -16,7 +16,6 @@ import { ShowcaseSection } from './sections/ShowcaseSection';
 import { ProjectBreakdownPage } from './sections/ProjectBreakdownPage';
 import { TechPipelineSection } from './sections/TechPipelineSection';
 import { ContactSection } from './sections/ContactSection';
-import { cn } from './utils/cn';
 
 const RigScene = lazy(() =>
   import('./canvas/RigScene').then((m) => ({ default: m.RigScene })),
@@ -196,23 +195,17 @@ function AppContent() {
         {t('Saltar al contenido principal', 'Skip to main content')}
       </a>
 
-      <div
-        ref={landingRef}
-        className={cn(
-          'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
-          activeProject && '-translate-x-10 scale-[0.985] will-change-transform',
-        )}
-      >
+      <Suspense fallback={null}>
+        <RigScene />
+      </Suspense>
+
+      <div ref={landingRef}>
         <Preloader
           onComplete={() => {
             rigState.bootReady = true;
             setPreloaderDone(true);
           }}
         />
-        <Suspense fallback={null}>
-          <RigScene />
-        </Suspense>
-        <CustomCursor />
         <HudOverlay
           activeSection={activeSection}
           onNavigate={handleNavigate}
@@ -234,6 +227,7 @@ function AppContent() {
       />
 
       <SoundToggle className="z-[80]" />
+      <CustomCursor />
     </div>
   );
 }
