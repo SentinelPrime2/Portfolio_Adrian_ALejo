@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { ArrowUp, ArrowUpRight, Check, Copy, Mail } from 'lucide-react';
 import { ARTIST_INFO } from '../data/portfolio';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
 import {
   addLaserBeam,
   addNeonFlicker,
@@ -27,6 +28,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
   const horizonRef = useRef<HTMLDivElement | null>(null);
   const copyTimerRef = useRef<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const { locale, t } = useLanguage();
 
   useEffect(() => {
     return () => {
@@ -39,9 +41,9 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
   useGSAP(
     () => {
       const section = sectionRef.current;
-      if (!section || prefersReducedMotion()) return;
+      if (!section) return;
 
-      if (horizonRef.current) {
+      if (!prefersReducedMotion() && horizonRef.current) {
         gsap.fromTo(
           horizonRef.current,
           { yPercent: 18 },
@@ -163,25 +165,38 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
       <div className="mx-auto mb-auto mt-[35svh] flex w-full max-w-3xl flex-col items-center space-y-5 border border-[#00f3ff]/20 bg-[#040912]/88 p-5 text-center backdrop-blur-[8px] sm:p-6 lg:my-auto lg:space-y-7 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
         <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-[#00f3ff] uppercase sm:gap-2.5 sm:text-[11px] sm:tracking-[0.22em]">
           <span className="contact-status-dot h-2 w-2 shrink-0 animate-pulse bg-[#00f3ff] shadow-[0_0_10px_#00f3ff] motion-reduce:animate-none" />
-          <span className="contact-status-text">DISPONIBLE PARA PROYECTOS · {ARTIST_INFO.location}</span>
+          <span className="contact-status-text">
+            {t('DISPONIBLE PARA PROYECTOS', 'AVAILABLE FOR PROJECTS')} ·{' '}
+            {locale === 'en' ? ARTIST_INFO.locationEn : ARTIST_INFO.location}
+          </span>
         </div>
 
         <h2
           id="contact-heading"
           className="font-display text-[1.75rem] font-bold leading-[1.1] tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-5xl lg:text-[3.5rem]"
         >
-          <span className="contact-title-main inline-block">HABLEMOS DE TU</span>{' '}
+          <span className="contact-title-main inline-block">
+            {t('HABLEMOS DE TU', "LET'S BUILD YOUR")}
+          </span>{' '}
           <span className="contact-neon-accent inline-block text-[#00f3ff] tron-glow-cyan">
-            PRÓXIMO RIG
+            {t('PRÓXIMO RIG', 'NEXT RIG')}
           </span>
         </h2>
 
         <p className="contact-desc max-w-lg text-sm text-[#8ba4be] sm:text-base lg:text-lg">
-          Character rigging, facial rigs y animación 3D para videojuegos y medios interactivos.
+          {t(
+            'Character rigging, facial rigs y animación 3D para videojuegos y medios interactivos.',
+            'Character rigging, facial rigs, and 3D animation for games and interactive media.',
+          )}
         </p>
 
         <span role="status" aria-live="polite" className="sr-only">
-          {copied ? 'Correo electrónico copiado al portapapeles' : ''}
+          {copied
+            ? t(
+                'Correo electrónico copiado al portapapeles',
+                'Email address copied to clipboard',
+              )
+            : ''}
         </span>
 
         {/* Direct Email Actions */}
@@ -191,14 +206,17 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
             data-cursor="magnetic"
             onPointerEnter={() => audioManager.playSynth('hover', 0.65)}
             onClick={handleCopyEmail}
-            aria-label={`Copiar correo ${ARTIST_INFO.email}`}
+            aria-label={t(
+              `Copiar correo ${ARTIST_INFO.email}`,
+              `Copy email ${ARTIST_INFO.email}`,
+            )}
             className="contact-cta-primary tron-glass-btn-violet relative inline-flex min-h-[44px] items-center gap-2.5 overflow-hidden px-7 py-3.5 font-mono text-xs font-bold tracking-[0.12em] uppercase active:scale-[0.97]"
           >
             <TronWireOverlay variant="violet" withScan />
             {copied ? (
               <>
                 <Check className="h-4 w-4" aria-hidden="true" />
-                <span>¡EMAIL COPIADO!</span>
+                <span>{t('¡EMAIL COPIADO!', 'EMAIL COPIED!')}</span>
               </>
             ) : (
               <>
@@ -217,7 +235,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
           >
             <TronWireOverlay variant="cyan" withScan />
             <Mail className="h-4 w-4 text-[#00f3ff]" aria-hidden="true" />
-            <span>Abrir Correo</span>
+            <span>{t('Abrir Correo', 'Open Email')}</span>
           </a>
         </div>
 
@@ -235,7 +253,9 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
             <TronWireOverlay variant="cyan" />
             <span>
               The Rookies
-              <span className="sr-only"> (se abre en una nueva pestaña)</span>
+              <span className="sr-only">
+                {t(' (se abre en una nueva pestaña)', ' (opens in a new tab)')}
+              </span>
             </span>
             <ArrowUpRight className="h-3.5 w-3.5 text-[#00f3ff]" aria-hidden="true" />
           </a>
@@ -254,7 +274,9 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
             <TronWireOverlay variant="violet" />
             <span>
               LinkedIn
-              <span className="sr-only"> (se abre en una nueva pestaña)</span>
+              <span className="sr-only">
+                {t(' (se abre en una nueva pestaña)', ' (opens in a new tab)')}
+              </span>
             </span>
             <ArrowUpRight className="h-3.5 w-3.5 text-[#bd00ff]" aria-hidden="true" />
           </a>
@@ -285,7 +307,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
           className="contact-footer-content inline-flex min-h-[44px] items-center gap-1.5 px-3 py-2 text-xs tracking-[0.18em] text-[#00f3ff] uppercase transition-colors hover:text-[#bd00ff]"
         >
           <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
-          <span>Arriba</span>
+          <span>{t('Arriba', 'Top')}</span>
         </button>
       </footer>
     </section>

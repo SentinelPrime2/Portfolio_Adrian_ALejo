@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
 import { cn } from '../utils/cn';
 
 export interface SoundToggleProps {
@@ -8,6 +9,7 @@ export interface SoundToggleProps {
 }
 
 export function SoundToggle({ className }: SoundToggleProps) {
+  const { t } = useLanguage();
   const { isMuted } = useSyncExternalStore(
     audioManager.subscribe,
     audioManager.getSnapshot,
@@ -29,7 +31,7 @@ export function SoundToggle({ className }: SoundToggleProps) {
       type="button"
       onClick={handleToggle}
       onPointerEnter={handleHover}
-      aria-label={isMuted ? 'Activar audio' : 'Silenciar audio'}
+      aria-label={isMuted ? t('Activar audio', 'Enable audio') : t('Silenciar audio', 'Mute audio')}
       aria-pressed={!isMuted}
       data-cursor="magnetic"
       className={cn(

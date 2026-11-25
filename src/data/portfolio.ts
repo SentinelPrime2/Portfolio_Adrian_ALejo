@@ -17,6 +17,7 @@ export interface PortfolioProject {
   title: string;
   fullTitle: string;
   subtitle: string;
+  subtitleEn: string;
   category: string;
   year: string;
   publishedDate: string;
@@ -26,15 +27,19 @@ export interface PortfolioProject {
   thumbnail: string;
   thumbnailHiRes: string;
   summary: string;
+  summaryEn: string;
   fullDescription: string;
   highlights: string[];
+  highlightsEn: string[];
   blocks: ProjectContentBlock[];
 }
 
 export interface PipelineStage {
   index: string;
   title: string;
+  titleEn: string;
   description: string;
+  descriptionEn: string;
   accent: 'yellow' | 'purple' | 'blue';
 }
 
@@ -44,10 +49,12 @@ export const ARTIST_INFO = {
   handle: 'SENTINELPRIME',
   role: '3D Rigger & Animator',
   location: 'España',
+  locationEn: 'Spain',
   email: 'adriaalejo02@gmail.com',
   rookiesUrl: 'https://www.therookies.co/u/SentinelPrime',
   linkedinUrl: 'https://www.linkedin.com/in/adri%C3%A1n-alejo-molina-813a5a255/',
   tagline: 'Rigs limpios y animación 3D para que cada personaje cobre vida en tiempo real.',
+  taglineEn: 'Clean rigs and 3D animation crafted to bring every character to life in real time.',
 } as const;
 
 export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
@@ -57,6 +64,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Finn The Human',
     fullTitle: '3D Rigging - Finn The Human',
     subtitle: 'Character & Facial Rig en Blender',
+    subtitleEn: 'Character & Facial Rig in Blender',
     category: '3D RIGGING',
     year: '2026',
     publishedDate: '4 Sep 2026',
@@ -69,12 +77,19 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-03/450724/1400xAUTO/FINN_RIGG_THUMBNAIL-SentinelPrime-crop.png',
     summary:
       'Rig estilizado completo en Blender con foco en ergonomía para el animador y deformaciones limpias en cuerpo, dedos y rostro.',
+    summaryEn:
+      'Complete stylized rig in Blender focused on animator ergonomics and clean deformation across body, fingers, and face.',
     fullDescription:
       'A selection of my character rigging work, focused on building robust, production-ready rigs for games. Exploring humanoid and creature setups, deformation, weight painting, controllers, constraints and animation-friendly workflows, with an emphasis on flexibility, reliability and clean deformation.',
     highlights: [
       'Bone Layers organizadas por función y jerarquía limpia',
       'Weight painting completo en cuerpo, dedos y lengua',
       'Pivote independiente de talón (Heel Pivot) y control maestro de manos',
+    ],
+    highlightsEn: [
+      'Function-organized Bone Layers and clean hierarchy',
+      'Full weight painting across body, fingers, and tongue',
+      'Independent Heel Pivot and master hand open/close control',
     ],
     blocks: [
       {
@@ -381,6 +396,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Bringing a Creature to Life',
     fullTitle: 'Bringing a Creature to Life: Model & Facial Rig',
     subtitle: 'Esculpido, Retopología y Rig Facial',
+    subtitleEn: 'Sculpting, Retopology & Facial Rig',
     category: 'FACIAL RIG',
     year: '2026',
     publishedDate: '10 Sep 2026',
@@ -393,12 +409,19 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/592836/1400xAUTO/BAT_RIGG_THUMBNAIL-SentinelPrime-crop.png',
     summary:
       'Criatura estilizada esculpida desde cero, retopologizada manualmente (3,732 triángulos) y equipada con rig facial expresivo.',
+    summaryEn:
+      'Stylized creature sculpted from scratch, hand-retopologized (3,732 triangles), and equipped with an expressive facial rig.',
     fullDescription:
       'Role: Modeling, Retopology, Rigging & Facial Animation Setup\nTools: Blender, RetopoFlow\n\nAn original creature character taken from concept to a fully rigged, expression-ready asset — covering sculpting, clean retopology, and a custom facial rig built for a wide range of expressions.',
     highlights: [
       'Retopología game-ready de 1,874 vértices / 3,732 triángulos',
       'Controladores oculares precisos y Blend Shapes para acting expresivo',
       'Deformación limpia optimizada para poses cartoon y real-time',
+    ],
+    highlightsEn: [
+      'Game-ready retopology at 1,874 vertices / 3,732 triangles',
+      'Precise eye controllers & custom Blend Shapes for expressive acting',
+      'Clean deformation optimized for cartoon poses and real-time use',
     ],
     blocks: [
       {
@@ -611,6 +634,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'El Guardián de los Terrarios',
     fullTitle: '3D Rigging & Animation - El Guardián de los Terrarios',
     subtitle: 'Rigging y Ciclos Jugables en Unity',
+    subtitleEn: 'Rigging & Playable Cycles in Unity',
     category: 'GAMEPLAY ANIM',
     year: '2026',
     publishedDate: '14 Aug 2026',
@@ -623,12 +647,19 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-14/261667/1400xAUTO/EGT_THUMBNAIL-SentinelPrime-crop.png',
     summary:
       'Rigging, skinning y librería completa de animaciones jugables para protagonista, enemigo gorila y entorno en Unity 3D.',
+    summaryEn:
+      'Rigging, skinning, and full playable animation library for the protagonist, gorilla enemy, and environment in Unity 3D.',
     fullDescription:
       'Character rigging, skinning and animation for a 3D narrative platformer, with a focus on deformation quality and gameplay integration.',
     highlights: [
       'Protagonista: Idle, Walk, Run, Stunned, Crouch, Slide y Jump',
       'Enemigo gorila: Walk, Run, Pec Slam, Smash y Rock Throw',
       'Integración directa de ciclos e interacciones en Unity',
+    ],
+    highlightsEn: [
+      'Protagonist: Idle, Walk, Run, Stunned, Crouch, Slide, and Jump',
+      'Gorilla enemy: Walk, Run, Pec Slam, Smash, and Rock Throw',
+      'Direct gameplay cycle & Animator Controller integration in Unity',
     ],
     blocks: [
       { type: 'heading', text: '1. ABOUT THE GAME' },
@@ -725,6 +756,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Samus Aran — Demo Reel',
     fullTitle: '3D Animation - Demo Reel',
     subtitle: 'Animación Sci-Fi y Body Mechanics',
+    subtitleEn: 'Sci-Fi Animation & Body Mechanics',
     category: 'ANIMATION REEL',
     year: '2026',
     publishedDate: '18 Jan 2026',
@@ -737,11 +769,18 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-13/982482/1400xAUTO/SAMUS_THUMNAIL-SentinelPrime-crop.png',
     summary:
       'Demo reel centrada en peso, inercia y lectura de silueta con secuencias de acción sci-fi en Blender.',
+    summaryEn:
+      'Demo reel focused on weight, momentum, and silhouette clarity across sci-fi action sequences in Blender.',
     fullDescription: 'Samus Aran 3D animations set made using Blender.',
     highlights: [
       'Secuencias: Aerial, Idle, Run y Backflip acrobático',
       'Pulido de arcos y curvas F-Curve para máxima contundencia',
       'Modelo/rig base de Curiomatic animado en Blender',
+    ],
+    highlightsEn: [
+      'Sequences: Aerial, Idle, Run, and acrobatic Backflip',
+      'Polished motion arcs and F-Curves for punchy impact',
+      'Animated in Blender on top of Curiomatic base model and rig',
     ],
     blocks: [
       { type: 'paragraph', text: 'About this piece', bold: true },
@@ -794,6 +833,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Meet Mat 5 — Tron Legacy',
     fullTitle: 'Meet Mat 5 - Tron Legacy',
     subtitle: 'Lookdev y Materiales Neón Sci-Fi',
+    subtitleEn: 'Lookdev & Sci-Fi Neon Materials',
     category: 'LOOKDEV',
     year: '2026',
     publishedDate: '14 Jan 2026',
@@ -806,10 +846,16 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-13/593273/1400xAUTO/MEETMAT_THUMB-SentinelPrime-crop.png',
     summary:
       'Estudio PBR y emisión neón inspirado en Tron: Legacy, texturizado en Substance 3D Painter e iluminado en Blender.',
+    summaryEn:
+      'PBR and neon-emission lookdev study inspired by Tron: Legacy, textured in Substance 3D Painter and lit in Blender.',
     fullDescription: 'Tron Legacy themed Meet Mat Made in Adobe Substance Painter',
     highlights: [
       'Mapas emisivos y control preciso de roughness PBR',
       'Iluminación de alto contraste y compositing final en Blender',
+    ],
+    highlightsEn: [
+      'Emissive maps and fine-tuned PBR roughness response',
+      'High-contrast lighting and final compositing in Blender',
     ],
     blocks: [
       { type: 'paragraph', text: 'About the entry', bold: true },
@@ -885,6 +931,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     title: 'Mobile Gameplay — Unity 6',
     fullTitle: 'Mobile Gameplay - Unity 6',
     subtitle: 'Pipeline Modular de Animación Real-Time',
+    subtitleEn: 'Modular Real-Time Animation Pipeline',
     category: 'UNITY 6',
     year: '2026',
     publishedDate: '18 Jan 2026',
@@ -897,11 +944,17 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-13/116174/1400xAUTO/MOBILE_GAMEPLAY_THUMB-SentinelPrime-crop.png',
     summary:
       'Tráiler jugable en Unity 6 demostrando rigging ligero por pivotes modulares y exportación directa desde Blender.',
+    summaryEn:
+      'Playable Unity 6 trailer showcasing lightweight modular pivot-point rigging and direct Blender export.',
     fullDescription:
       'Short trailer showcasing a bit of a mobile gameplay. In this project I got to rig simple characters and objects between Blender and Unity 6 in order to create a timeline with multiple events and modular animations.',
     highlights: [
       'Rigging ultraligero optimizado para rendimiento móvil',
       'Timeline modular por puntos de pivote entre Blender y Unity 6',
+    ],
+    highlightsEn: [
+      'Ultra-lightweight rigging optimized for mobile performance',
+      'Modular pivot-point timeline workflow between Blender and Unity 6',
     ],
     blocks: [
       { type: 'paragraph', text: 'About the environment', bold: true },
@@ -955,29 +1008,41 @@ export const PIPELINE_STAGES: PipelineStage[] = [
   {
     index: '01',
     title: 'Topología para Deformar',
+    titleEn: 'Deformation-Ready Topology',
     description:
       'Edge-loops limpios en articulaciones y rostro para mantener el volumen en cualquier pose.',
+    descriptionEn:
+      'Clean edge-loops across joints and face to preserve volume through every pose.',
     accent: 'blue',
   },
   {
     index: '02',
     title: 'Armature & Weight Painting',
+    titleEn: 'Armature & Weight Painting',
     description:
       'Jerarquías modulares, pivotes independientes y skinning preciso en dedos, hombros y cara.',
+    descriptionEn:
+      'Modular hierarchies, independent pivots, and precise skinning across fingers, shoulders, and face.',
     accent: 'purple',
   },
   {
     index: '03',
     title: 'Controles Animator-First',
+    titleEn: 'Animator-First Controls',
     description:
       'Sistemas IK/FK y Blend Shapes intuitivos para centrarse en la actuación, nunca en pelear con el rig.',
+    descriptionEn:
+      'Intuitive IK/FK systems and Blend Shapes built to focus on acting, never fighting the rig.',
     accent: 'yellow',
   },
   {
     index: '04',
     title: 'Integración Real-Time',
+    titleEn: 'Real-Time Integration',
     description:
       'Esqueletos optimizados y ciclos de locomoción y combate listos para Unity 6.',
+    descriptionEn:
+      'Optimized skeletons and locomotion & combat cycles ready for Unity 6.',
     accent: 'blue',
   },
 ];

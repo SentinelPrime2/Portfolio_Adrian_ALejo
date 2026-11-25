@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { ArrowDownRight } from 'lucide-react';
 import { ARTIST_INFO } from '../data/portfolio';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
 import {
   addNeonFlicker,
   addScanWipe,
@@ -24,11 +25,13 @@ interface HeroSectionProps {
 export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const { locale, t } = useLanguage();
 
   useGSAP(
     () => {
       const section = sectionRef.current;
-      if (!section || prefersReducedMotion()) return;
+      if (!section) return;
+      const reduced = prefersReducedMotion();
 
       const preInitTargets =
         '.hero-dot, .hero-eyebrow-text, .hero-name-wipe, .hero-neon-handle, .hero-tagline-wipe, .hero-cta-primary, .hero-cta-secondary, .hero-scroll-label, .hero-scroll-line';
@@ -75,17 +78,19 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
       );
       addNeonFlicker(tl, '.hero-scroll-label', 0.68);
 
-      gsap.to(contentRef.current, {
-        yPercent: -14,
-        opacity: 0.1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        },
-      });
+      if (!reduced) {
+        gsap.to(contentRef.current, {
+          yPercent: -14,
+          opacity: 0.1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      }
     },
     { scope: sectionRef, dependencies: [ready] },
   );
@@ -128,7 +133,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
 
           {/* One clear sentence — no extra box */}
           <p className="hero-tagline-wipe max-w-md text-sm leading-relaxed text-[#8ba4be] sm:text-lg lg:text-xl">
-            {ARTIST_INFO.tagline}
+            {locale === 'en' ? ARTIST_INFO.taglineEn : ARTIST_INFO.tagline}
           </p>
 
           {/* Two sharp Tron Obsidian Glass CTAs */}
@@ -144,7 +149,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
               className="hero-cta-primary tron-glass-btn-cyan group relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 py-2.5 font-display text-xs font-bold tracking-[0.14em] uppercase active:scale-[0.97] lg:gap-2.5 lg:px-7 lg:py-3.5 lg:text-sm"
             >
               <TronWireOverlay variant="cyan" withScan />
-              <span>Ver Proyectos</span>
+              <span>{t('Ver Proyectos', 'View Projects')}</span>
               <ArrowDownRight
                 className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5"
                 aria-hidden="true"
@@ -164,7 +169,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
               <TronWireOverlay variant="violet" withScan />
               <span aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-1.5 w-1.5 border-l border-t border-[#00f3ff]" />
               <span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 h-1.5 w-1.5 border-b border-r border-[#bd00ff]" />
-              <span>Contacto</span>
+              <span>{t('Contacto', 'Contact')}</span>
             </button>
           </div>
         </div>

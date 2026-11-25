@@ -14,13 +14,13 @@ import {
   type WeightPaintZone,
 } from '../canvas/rigState';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
 import {
   addLaserBeam,
   addNeonFlicker,
   addScanWipe,
   addWireDraw,
   createOnceScrollTrigger,
-  prefersReducedMotion,
 } from '../animations/tronInit';
 import { TronWireOverlay } from '../components/TronWireOverlay';
 import { TronCircuitCluster } from '../components/TronCircuitCluster';
@@ -28,11 +28,19 @@ import { cn } from '../utils/cn';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const PRESETS: { id: RigAnimationPreset; label: string; sub: string; pose: number; energy: number }[] = [
-  { id: 'idle', label: 'IDLE', sub: 'Brazos cruzados', pose: 1, energy: 0.5 },
-  { id: 'wave', label: 'SALUDO', sub: 'Wave + Sonrisa', pose: 1, energy: 0.55 },
-  { id: 'run', label: 'CORRER', sub: 'Carrera adelante', pose: 1, energy: 0.6 },
-  { id: 'tpose', label: 'T-POSE', sub: 'Bind pose base', pose: 0, energy: 0.1 },
+const PRESETS: {
+  id: RigAnimationPreset;
+  label: string;
+  labelEn: string;
+  sub: string;
+  subEn: string;
+  pose: number;
+  energy: number;
+}[] = [
+  { id: 'idle', label: 'IDLE', labelEn: 'IDLE', sub: 'Brazos cruzados', subEn: 'Crossed arms', pose: 1, energy: 0.5 },
+  { id: 'wave', label: 'SALUDO', labelEn: 'WAVE', sub: 'Wave + Sonrisa', subEn: 'Wave + Smile', pose: 1, energy: 0.55 },
+  { id: 'run', label: 'CORRER', labelEn: 'RUN', sub: 'Carrera adelante', subEn: 'Forward run', pose: 1, energy: 0.6 },
+  { id: 'tpose', label: 'T-POSE', labelEn: 'T-POSE', sub: 'Bind pose base', subEn: 'Base bind pose', pose: 0, energy: 0.1 },
 ];
 
 const LAB_TABS: { id: RigLabTab; label: string }[] = [
@@ -42,16 +50,23 @@ const LAB_TABS: { id: RigLabTab; label: string }[] = [
   { id: 'mech', label: 'MECH' },
 ];
 
-const WEIGHT_ZONES: { id: WeightPaintZone; label: string; bonesInfo: string }[] = [
-  { id: 'head', label: 'CABEZA', bonesInfo: 'DEF_HEAD · DEF_NECK · DEF_EAR.L/R' },
-  { id: 'torso', label: 'TORSO', bonesInfo: 'DEF_HIPS · DEF_TORSO_01..03' },
-  { id: 'armL', label: 'BRAZO IZQ.', bonesInfo: '6 segmentos DEF_UPPER_ARM / FOREARM.L' },
-  { id: 'hands', label: 'MANOS', bonesInfo: 'DEF_HAND · PALM · FINGER_A..D (L/R)' },
-  { id: 'legs', label: 'PIERNAS', bonesInfo: 'DEF_UPPER/LOWER_LEG · FOOT · TOES' },
-  { id: 'face', label: 'BOCA / LENGUA', bonesInfo: '18 DEF_TONGUE + 12 DEF_LIP + EYES' },
+const WEIGHT_ZONES: {
+  id: WeightPaintZone;
+  label: string;
+  labelEn: string;
+  bonesInfo: string;
+  bonesInfoEn: string;
+}[] = [
+  { id: 'head', label: 'CABEZA', labelEn: 'HEAD', bonesInfo: 'DEF_HEAD · DEF_NECK · DEF_EAR.L/R', bonesInfoEn: 'DEF_HEAD · DEF_NECK · DEF_EAR.L/R' },
+  { id: 'torso', label: 'TORSO', labelEn: 'TORSO', bonesInfo: 'DEF_HIPS · DEF_TORSO_01..03', bonesInfoEn: 'DEF_HIPS · DEF_TORSO_01..03' },
+  { id: 'armL', label: 'BRAZO IZQ.', labelEn: 'LEFT ARM', bonesInfo: '6 segmentos DEF_UPPER_ARM / FOREARM.L', bonesInfoEn: '6 segments DEF_UPPER_ARM / FOREARM.L' },
+  { id: 'hands', label: 'MANOS', labelEn: 'HANDS', bonesInfo: 'DEF_HAND · PALM · FINGER_A..D (L/R)', bonesInfoEn: 'DEF_HAND · PALM · FINGER_A..D (L/R)' },
+  { id: 'legs', label: 'PIERNAS', labelEn: 'LEGS', bonesInfo: 'DEF_UPPER/LOWER_LEG · FOOT · TOES', bonesInfoEn: 'DEF_UPPER/LOWER_LEG · FOOT · TOES' },
+  { id: 'face', label: 'BOCA / LENGUA', labelEn: 'MOUTH / TONGUE', bonesInfo: '18 DEF_TONGUE + 12 DEF_LIP + EYES', bonesInfoEn: '18 DEF_TONGUE + 12 DEF_LIP + EYES' },
 ];
 
 export function TechPipelineSection() {
+  const { locale, t } = useLanguage();
   const sectionRef = useRef<HTMLElement | null>(null);
   const spineRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -115,13 +130,6 @@ export function TechPipelineSection() {
             rigState.pipelineLabFocused = self.isActive;
           },
         });
-      }
-
-      if (prefersReducedMotion()) {
-        if (spineRef.current) {
-          spineRef.current.style.transform = 'scaleY(1)';
-        }
-        return;
       }
 
       ScrollTrigger.create({
@@ -239,8 +247,10 @@ export function TechPipelineSection() {
     } else {
       rigState.weightZone = 'none';
     }
-    const label = LAB_TABS.find((t) => t.id === tab)?.label ?? tab;
-    setRigAnnouncement(`Modo ${label} activado en Rig Lab`);
+    const label = LAB_TABS.find((tabItem) => tabItem.id === tab)?.label ?? tab;
+    setRigAnnouncement(
+      t(`Modo ${label} activado en Rig Lab`, `${label} mode activated in Rig Lab`),
+    );
     audioManager.playSynth('click', 0.8);
   };
 
@@ -266,7 +276,10 @@ export function TechPipelineSection() {
     rigState.preset = p.id;
     rigState.poseBlend = p.pose;
     rigState.actingEnergy = p.energy;
-    setRigAnnouncement(`Animación ${p.label} activada`);
+    const presetName = locale === 'en' ? p.labelEn : p.label;
+    setRigAnnouncement(
+      t(`Animación ${presetName} activada`, `${presetName} animation activated`),
+    );
     audioManager.playSynth('success', 0.7);
   };
 
@@ -290,14 +303,22 @@ export function TechPipelineSection() {
     const next = !xray;
     setXray(next);
     rigState.xrayMode = next;
-    setRigAnnouncement(`Modo X-Ray ${next ? 'activado' : 'desactivado'}`);
+    setRigAnnouncement(
+      next
+        ? t('Modo X-Ray activado', 'X-Ray mode enabled')
+        : t('Modo X-Ray desactivado', 'X-Ray mode disabled'),
+    );
     audioManager.playSynth('click', 0.85);
   };
 
   const toggleWidgets = () => {
     const next = !showWidgets;
     setRigShowWidgets(next);
-    setRigAnnouncement(`Controladores CTRL ${next ? 'visibles' : 'ocultos'}`);
+    setRigAnnouncement(
+      next
+        ? t('Controladores CTRL visibles', 'CTRL controllers visible')
+        : t('Controladores CTRL ocultos', 'CTRL controllers hidden'),
+    );
     audioManager.playSynth('click', 0.85);
   };
 
@@ -305,7 +326,11 @@ export function TechPipelineSection() {
     const next = !showBones;
     setShowBones(next);
     rigState.showBones = next;
-    setRigAnnouncement(`Esqueleto DEF ${next ? 'visible' : 'oculto'}`);
+    setRigAnnouncement(
+      next
+        ? t('Esqueleto DEF visible', 'DEF skeleton visible')
+        : t('Esqueleto DEF oculto', 'DEF skeleton hidden'),
+    );
     audioManager.playSynth('click', 0.85);
   };
 
@@ -351,15 +376,22 @@ export function TechPipelineSection() {
     rigState.ikTargetX = defX;
     rigState.ikTargetY = defY;
     setIkPos({ x: defX, y: defY });
-    setRigAnnouncement(`Modo IK cambiado a ${mode === 'hand' ? 'Mano IK' : 'Eye Aim'}`);
+    setRigAnnouncement(
+      mode === 'hand'
+        ? t('Modo IK cambiado a Mano IK', 'IK mode switched to Hand IK')
+        : t('Modo IK cambiado a Eye Aim', 'IK mode switched to Eye Aim'),
+    );
     audioManager.playSynth('click', 0.8);
   };
 
   const selectWeightZone = (zone: WeightPaintZone) => {
     setWeightZone(zone);
     rigState.weightZone = zone;
-    const label = WEIGHT_ZONES.find((z) => z.id === zone)?.label ?? zone;
-    setRigAnnouncement(`Mapa de pesos seleccionado: ${label}`);
+    const found = WEIGHT_ZONES.find((z) => z.id === zone);
+    const label = found ? (locale === 'en' ? found.labelEn : found.label) : zone;
+    setRigAnnouncement(
+      t(`Mapa de pesos seleccionado: ${label}`, `Weight map selected: ${label}`),
+    );
     audioManager.playSynth('click', 0.8);
   };
 
@@ -392,7 +424,9 @@ export function TechPipelineSection() {
     rigState.mouthTongue = 0;
     rigState.ikTargetX = -0.25;
     rigState.ikTargetY = 0.28;
-    setRigAnnouncement('Rig Lab restablecido a posición inicial');
+    setRigAnnouncement(
+      t('Rig Lab restablecido a posición inicial', 'Rig Lab reset to initial pose'),
+    );
     audioManager.playSynth('click', 0.8);
   };
 
@@ -457,10 +491,10 @@ export function TechPipelineSection() {
                 </span>
                 <div className="pipeline-step-content border border-[#00f3ff]/15 bg-[#050b14]/88 p-3.5 backdrop-blur-sm lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
                   <h3 className="mt-0.5 font-display text-base font-bold text-[#ecf8ff] uppercase lg:mt-1 sm:text-lg">
-                    {stage.title}
+                    {locale === 'en' ? stage.titleEn : stage.title}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-[#8ba4be] lg:mt-1.5">
-                    {stage.description}
+                    {locale === 'en' ? stage.descriptionEn : stage.description}
                   </p>
                 </div>
               </div>
@@ -488,7 +522,10 @@ export function TechPipelineSection() {
                 <span>
                   {isDraggingIk
                     ? `TARGET X:${ikPos.x.toFixed(2)} Y:${ikPos.y.toFixed(2)}`
-                    : `Arrastra aquí para mover ${ikMode === 'hand' ? 'CTRL_HAND_IK' : 'EYE_AIM'}`}
+                    : t(
+                        `Arrastra aquí para mover ${ikMode === 'hand' ? 'CTRL_HAND_IK' : 'EYE_AIM'}`,
+                        `Drag here to move ${ikMode === 'hand' ? 'CTRL_HAND_IK' : 'EYE_AIM'}`,
+                      )}
                 </span>
               </div>
             )}
@@ -519,12 +556,15 @@ export function TechPipelineSection() {
                   <span>
                     {isDraggingIk
                       ? `TARGET X:${ikPos.x.toFixed(2)} Y:${ikPos.y.toFixed(2)}`
-                      : `Toca y arrastra (${ikMode === 'hand' ? 'HAND_IK' : 'EYE_AIM'})`}
+                      : t(
+                          `Toca y arrastra (${ikMode === 'hand' ? 'HAND_IK' : 'EYE_AIM'})`,
+                          `Touch & drag (${ikMode === 'hand' ? 'HAND_IK' : 'EYE_AIM'})`,
+                        )}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.12em] text-[#8ba4be]/75 uppercase">
-                  <span>VISTA REACTIVA 3D</span>
+                  <span>{t('VISTA REACTIVA 3D', 'REACTIVE 3D VIEW')}</span>
                   <span>{xray ? 'X-RAY' : showBones ? 'DEF' : 'SOLID'}</span>
                 </div>
               )}
@@ -555,7 +595,7 @@ export function TechPipelineSection() {
                   onClick={resetRig}
                   onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
                   data-cursor="pointer"
-                  aria-label="Restablecer rig"
+                  aria-label={t('Restablecer rig', 'Reset rig')}
                   className="inline-flex h-11 w-11 items-center justify-center border border-[#bd00ff] bg-[#a020f0]/[0.18] text-[#f5e6ff] shadow-[var(--glow-violet-border)] transition-colors hover:border-[#00f3ff] hover:text-[#e6fcff]"
                 >
                   <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -565,7 +605,7 @@ export function TechPipelineSection() {
               {/* 4 Studio Mode Tabs */}
               <div
                 role="tablist"
-                aria-label="Modos del Rig Lab"
+                aria-label={t('Modos del Rig Lab', 'Rig Lab modes')}
                 className="mt-3.5 grid grid-cols-4 border border-[#00f3ff]/20 bg-[#050b14]/70"
               >
                 {LAB_TABS.map((t, idx) => {
@@ -626,10 +666,10 @@ export function TechPipelineSection() {
                           )}
                         >
                           <span className="font-mono text-[11px] font-semibold tracking-[0.14em] uppercase">
-                            {p.label}
+                            {locale === 'en' ? p.labelEn : p.label}
                           </span>
                           <span className="mt-0.5 font-mono text-[10px] tracking-[0.06em] text-[#8ba4be]">
-                            {p.sub}
+                            {locale === 'en' ? p.subEn : p.sub}
                           </span>
                         </button>
                       );
@@ -662,7 +702,7 @@ export function TechPipelineSection() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between font-mono text-[11px]">
                         <label htmlFor="energy-slider" className="tracking-[0.12em] text-[#ecf8ff]">
-                          VELOCIDAD / ENERGÍA
+                          {t('VELOCIDAD / ENERGÍA', 'SPEED / ENERGY')}
                         </label>
                         <span className="tabular-nums text-[#e6fcff]">
                           {(0.12 + Math.pow(energy, 1.4) * 3.1).toFixed(1)}× · {Math.round(energy * 100)}%
@@ -707,7 +747,7 @@ export function TechPipelineSection() {
                       )}
                     >
                       <Crosshair className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>MANO IK</span>
+                      <span>{t('MANO IK', 'HAND IK')}</span>
                     </button>
 
                     <button
@@ -731,15 +771,41 @@ export function TechPipelineSection() {
                   <p className="font-mono text-[11px] leading-relaxed text-[#8ba4be]">
                     {ikMode === 'hand' ? (
                       <>
-                        <span className="hidden lg:inline">Arrastra sobre el viewport central (o usa los ejes)</span>
-                        <span className="lg:hidden">Arrastra sobre la vista superior (o usa los ejes)</span>
-                        {' para mover CTRL_HAND_IK y resolver la cadena de 6 segmentos en tiempo real.'}
+                        <span className="hidden lg:inline">
+                          {t(
+                            'Arrastra sobre el viewport central (o usa los ejes)',
+                            'Drag across the center viewport (or use the axes)',
+                          )}
+                        </span>
+                        <span className="lg:hidden">
+                          {t(
+                            'Arrastra sobre la vista superior (o usa los ejes)',
+                            'Drag across the top view (or use the axes)',
+                          )}
+                        </span>
+                        {t(
+                          ' para mover CTRL_HAND_IK y resolver la cadena de 6 segmentos en tiempo real.',
+                          ' to move CTRL_HAND_IK and solve the 6-segment chain in real time.',
+                        )}
                       </>
                     ) : (
                       <>
-                        <span className="hidden lg:inline">Arrastra sobre el viewport central (o usa los ejes)</span>
-                        <span className="lg:hidden">Arrastra sobre la vista superior (o usa los ejes)</span>
-                        {' para dirigir los ojos y la cabeza de Finn con líneas de restricción Aim.'}
+                        <span className="hidden lg:inline">
+                          {t(
+                            'Arrastra sobre el viewport central (o usa los ejes)',
+                            'Drag across the center viewport (or use the axes)',
+                          )}
+                        </span>
+                        <span className="lg:hidden">
+                          {t(
+                            'Arrastra sobre la vista superior (o usa los ejes)',
+                            'Drag across the top view (or use the axes)',
+                          )}
+                        </span>
+                        {t(
+                          ' para dirigir los ojos y la cabeza de Finn con líneas de restricción Aim.',
+                          " to aim Finn's eyes and head with live Aim constraint lines.",
+                        )}
                       </>
                     )}
                   </p>
@@ -748,7 +814,7 @@ export function TechPipelineSection() {
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ik-x-slider" className="text-[#ecf8ff]">EJE X</label>
+                        <label htmlFor="ik-x-slider" className="text-[#ecf8ff]">{t('EJE X', 'AXIS X')}</label>
                         <span className="tabular-nums text-[#00f3ff]">{ikPos.x.toFixed(2)}</span>
                       </div>
                       <input
@@ -771,7 +837,7 @@ export function TechPipelineSection() {
 
                     <div className="space-y-1">
                       <div className="flex justify-between font-mono text-[11px]">
-                        <label htmlFor="ik-y-slider" className="text-[#ecf8ff]">EJE Y</label>
+                        <label htmlFor="ik-y-slider" className="text-[#ecf8ff]">{t('EJE Y', 'AXIS Y')}</label>
                         <span className="tabular-nums text-[#e6fcff]">{ikPos.y.toFixed(2)}</span>
                       </div>
                       <input
@@ -821,7 +887,7 @@ export function TechPipelineSection() {
                               : 'border-[#00f3ff]/20 bg-[#050b14]/70 text-[#8ba4be] hover:border-[#00f3ff]/50 hover:text-[#ecf8ff]',
                           )}
                         >
-                          {z.label}
+                          {locale === 'en' ? z.labelEn : z.label}
                         </button>
                       );
                     })}
@@ -845,7 +911,7 @@ export function TechPipelineSection() {
                       }}
                     />
                     <div className="font-mono text-[10px] text-[#ecf8ff]/90">
-                      {activeWeightMeta.bonesInfo}
+                      {locale === 'en' ? activeWeightMeta.bonesInfoEn : activeWeightMeta.bonesInfo}
                     </div>
                   </div>
                 </div>
@@ -861,7 +927,12 @@ export function TechPipelineSection() {
                 >
                   <div className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.1em] text-[#00f3ff] uppercase">
                     <Sliders className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span>Mecanismos de FINN_ANTIGRAVITY.blend</span>
+                    <span>
+                      {t(
+                        'Mecanismos de FINN_ANTIGRAVITY.blend',
+                        'FINN_ANTIGRAVITY.blend Mechanisms',
+                      )}
+                    </span>
                   </div>
 
                   <div className="space-y-3.5">
@@ -869,7 +940,7 @@ export function TechPipelineSection() {
                     <div className="space-y-1">
                       <div className="flex justify-between font-mono text-[11px]">
                         <label htmlFor="hand-grip-slider" className="text-[#ecf8ff]">
-                          CTRL_FINGERS_ROT (MANO)
+                          CTRL_FINGERS_ROT ({t('MANO', 'HAND')})
                         </label>
                         <span className="tabular-nums text-[#00f3ff]">
                           {Math.round(handGrip * 100)}%
@@ -897,7 +968,7 @@ export function TechPipelineSection() {
                     <div className="space-y-1">
                       <div className="flex justify-between font-mono text-[11px]">
                         <label htmlFor="foot-roll-slider" className="text-[#ecf8ff]">
-                          CTRL_FOOT_ROLL (TALÓN ↔ PUNTA)
+                          CTRL_FOOT_ROLL ({t('TALÓN ↔ PUNTA', 'HEEL ↔ TOE')})
                         </label>
                         <span className="tabular-nums text-[#e6fcff]">
                           {footRoll < -0.08 ? 'HEEL' : footRoll > 0.08 ? 'TOE' : 'FLAT'} ({Math.round(footRoll * 100)}%)
@@ -925,7 +996,7 @@ export function TechPipelineSection() {
                     <div className="space-y-1">
                       <div className="flex justify-between font-mono text-[11px]">
                         <label htmlFor="tongue-slider" className="text-[#ecf8ff]">
-                          CTRL_TONGUE + LIPS (18 HUESOS)
+                          CTRL_TONGUE + LIPS ({t('18 HUESOS', '18 BONES')})
                         </label>
                         <span className="tabular-nums text-[#f5e6ff]">
                           {Math.round(mouthTongue * 100)}%
@@ -955,13 +1026,13 @@ export function TechPipelineSection() {
               {/* Persistent Rig Layers Bar (always available across all 4 tabs!) */}
               <div className="mt-5 border-t border-[#00f3ff]/20 pt-4">
                 <div className="mb-2 font-mono text-[10px] tracking-[0.16em] text-[#8ba4be] uppercase">
-                  CAPAS DEL RIG (BLENDER VIEWPORT)
+                  {t('CAPAS DEL RIG (BLENDER VIEWPORT)', 'RIG LAYERS (BLENDER VIEWPORT)')}
                 </div>
                 <div className="grid grid-cols-3 gap-1.5">
                   <button
                     type="button"
                     data-cursor="magnetic"
-                    aria-label="Modo X-Ray del rig"
+                    aria-label={t('Modo X-Ray del rig', 'Rig X-Ray mode')}
                     aria-pressed={xray}
                     onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
                     onClick={toggleXray}
@@ -979,7 +1050,10 @@ export function TechPipelineSection() {
                   <button
                     type="button"
                     data-cursor="magnetic"
-                    aria-label="Mostrar controladores del rig (CTRL)"
+                    aria-label={t(
+                      'Mostrar controladores del rig (CTRL)',
+                      'Toggle rig controllers (CTRL)',
+                    )}
                     aria-pressed={showWidgets}
                     onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
                     onClick={toggleWidgets}
@@ -997,7 +1071,10 @@ export function TechPipelineSection() {
                   <button
                     type="button"
                     data-cursor="magnetic"
-                    aria-label="Mostrar huesos de deformación (DEF)"
+                    aria-label={t(
+                      'Mostrar huesos de deformación (DEF)',
+                      'Toggle deformation bones (DEF)',
+                    )}
                     aria-pressed={showBones}
                     onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
                     onClick={toggleBones}

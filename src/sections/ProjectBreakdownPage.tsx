@@ -15,6 +15,8 @@ import {
   type ProjectContentBlock,
 } from '../data/portfolio';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
+import { LanguageToggle } from '../components/LanguageToggle';
 import { prefersReducedMotion } from '../animations/tronInit';
 import { TronWireOverlay } from '../components/TronWireOverlay';
 import { cn } from '../utils/cn';
@@ -38,6 +40,7 @@ export function ProjectBreakdownPage({
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const backButtonRef = useRef<HTMLButtonElement | null>(null);
   const [lightbox, setLightbox] = useState<LightboxMedia | null>(null);
+  const { locale, t } = useLanguage();
 
   const reduced = prefersReducedMotion();
 
@@ -125,7 +128,7 @@ export function ProjectBreakdownPage({
 
           {/* Sticky Top Navigation Bar */}
           <header className="sticky top-0 z-30 border-b border-[#00f3ff]/20 bg-[#020408]/92 px-4 py-2.5 backdrop-blur-md sm:px-8 sm:py-3">
-            <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 sm:gap-3">
               <button
                 ref={backButtonRef}
                 type="button"
@@ -135,10 +138,10 @@ export function ProjectBreakdownPage({
                   audioManager.playSynth('click', 0.75);
                   onClose();
                 }}
-                className="tron-glass-btn-cyan inline-flex min-h-[42px] items-center gap-2 px-3.5 py-2 font-mono text-[11px] font-semibold tracking-[0.14em] uppercase sm:px-4"
+                className="tron-glass-btn-cyan inline-flex min-h-[40px] items-center gap-1.5 px-3 py-2 font-mono text-[10px] font-semibold tracking-[0.12em] uppercase sm:min-h-[42px] sm:gap-2 sm:px-4 sm:text-[11px] sm:tracking-[0.14em]"
               >
                 <ArrowLeft className="h-3.5 w-3.5 text-[#00f3ff]" aria-hidden="true" />
-                <span>Volver a proyectos</span>
+                <span>{t('Volver a proyectos', 'Back to projects')}</span>
               </button>
 
               <div className="hidden min-w-0 items-center gap-2.5 font-mono text-[11px] tracking-[0.16em] text-[#8ba4be] uppercase sm:flex">
@@ -149,17 +152,21 @@ export function ProjectBreakdownPage({
               </div>
 
               <div className="flex items-center gap-1.5">
+                <LanguageToggle />
                 {prevProject && (
                   <button
                     type="button"
                     data-cursor="pointer"
-                    aria-label={`Proyecto anterior: ${prevProject.title}`}
+                    aria-label={t(
+                      `Proyecto anterior: ${prevProject.title}`,
+                      `Previous project: ${prevProject.title}`,
+                    )}
                     onPointerEnter={() => audioManager.playSynth('hover', 0.5)}
                     onClick={() => {
                       audioManager.playSynth('click', 0.75);
                       onSelectProject(prevProject);
                     }}
-                    className="inline-flex h-[42px] w-[42px] items-center justify-center border border-[#00f3ff]/25 bg-[#050b14]/85 text-[#ecf8ff] transition-colors hover:border-[#00f3ff] hover:text-[#e6fcff]"
+                    className="inline-flex h-[40px] w-[40px] items-center justify-center border border-[#00f3ff]/25 bg-[#050b14]/85 text-[#ecf8ff] transition-colors hover:border-[#00f3ff] hover:text-[#e6fcff] sm:h-[42px] sm:w-[42px]"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                   </button>
@@ -168,13 +175,16 @@ export function ProjectBreakdownPage({
                   <button
                     type="button"
                     data-cursor="pointer"
-                    aria-label={`Siguiente proyecto: ${nextProject.title}`}
+                    aria-label={t(
+                      `Siguiente proyecto: ${nextProject.title}`,
+                      `Next project: ${nextProject.title}`,
+                    )}
                     onPointerEnter={() => audioManager.playSynth('hover', 0.5)}
                     onClick={() => {
                       audioManager.playSynth('click', 0.75);
                       onSelectProject(nextProject);
                     }}
-                    className="inline-flex h-[42px] w-[42px] items-center justify-center border border-[#00f3ff]/25 bg-[#050b14]/85 text-[#ecf8ff] transition-colors hover:border-[#bd00ff] hover:text-[#f5e6ff]"
+                    className="inline-flex h-[40px] w-[40px] items-center justify-center border border-[#00f3ff]/25 bg-[#050b14]/85 text-[#ecf8ff] transition-colors hover:border-[#bd00ff] hover:text-[#f5e6ff] sm:h-[42px] sm:w-[42px]"
                   >
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </button>
@@ -244,15 +254,15 @@ export function ProjectBreakdownPage({
                 />
                 <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 border border-[#00f3ff]/45 bg-[#020408]/85 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-[#e6fcff] uppercase opacity-0 transition-opacity group-hover:opacity-100">
                   <Maximize2 className="h-3 w-3 text-[#00f3ff]" aria-hidden="true" />
-                  Ampliar
+                  {t('Ampliar', 'Zoom')}
                 </span>
               </button>
             </div>
 
             {/* Quick Technical Highlights Strip */}
-            {project.highlights.length > 0 && (
+            {(locale === 'en' ? project.highlightsEn : project.highlights).length > 0 && (
               <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {project.highlights.map((item) => (
+                {(locale === 'en' ? project.highlightsEn : project.highlights).map((item) => (
                   <div
                     key={item}
                     className="border-l-2 border-[#bd00ff] bg-[#060d18]/90 px-4 py-3 text-xs leading-relaxed text-[#dbeaf8] sm:text-sm"
@@ -270,6 +280,7 @@ export function ProjectBreakdownPage({
                   key={`${project.id}-block-${idx}`}
                   block={block}
                   projectTitle={project.title}
+                  zoomLabel={t('Ampliar', 'Zoom')}
                   onOpenLightbox={openLightbox}
                 />
               ))}
@@ -278,7 +289,7 @@ export function ProjectBreakdownPage({
             {/* Bottom Navigation: Quick Project Switcher & Return */}
             <footer className="mt-16 border-t border-[#00f3ff]/20 pt-10">
               <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-[#00f3ff] uppercase">
-                SEGUIR EXPLORANDO EL PORTFOLIO
+                {t('SEGUIR EXPLORANDO EL PORTFOLIO', 'KEEP EXPLORING PORTFOLIO')}
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -296,7 +307,7 @@ export function ProjectBreakdownPage({
                     <div className="min-w-0">
                       <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] text-[#8ba4be] uppercase">
                         <ArrowLeft className="h-3 w-3 text-[#00f3ff]" aria-hidden="true" />
-                        Anterior · {prevProject.index}
+                        {t('Anterior', 'Previous')} · {prevProject.index}
                       </span>
                       <div className="mt-1 truncate font-display text-sm font-bold text-[#ecf8ff] uppercase sm:text-base">
                         {prevProject.title}
@@ -318,7 +329,7 @@ export function ProjectBreakdownPage({
                   >
                     <div className="min-w-0 sm:flex-1">
                       <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.16em] text-[#8ba4be] uppercase">
-                        Siguiente · {nextProject.index}
+                        {t('Siguiente', 'Next')} · {nextProject.index}
                         <ArrowRight className="h-3 w-3 text-[#bd00ff]" aria-hidden="true" />
                       </span>
                       <div className="mt-1 truncate font-display text-sm font-bold text-[#ecf8ff] uppercase sm:text-base">
@@ -341,7 +352,7 @@ export function ProjectBreakdownPage({
                   className="tron-glass-btn-violet inline-flex min-h-[44px] items-center gap-2.5 px-6 py-3 font-display text-xs font-bold tracking-[0.16em] uppercase"
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                  <span>Volver al inicio de proyectos</span>
+                  <span>{t('Volver al inicio de proyectos', 'Back to project showcase')}</span>
                 </button>
               </div>
             </footer>
@@ -355,7 +366,7 @@ export function ProjectBreakdownPage({
                   <motion.div
                     role="dialog"
                     aria-modal="true"
-                    aria-label="Imagen ampliada"
+                    aria-label={t('Imagen ampliada', 'Enlarged image')}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -369,7 +380,7 @@ export function ProjectBreakdownPage({
                     <button
                       type="button"
                       autoFocus
-                      aria-label="Cerrar imagen ampliada"
+                      aria-label={t('Cerrar imagen ampliada', 'Close enlarged image')}
                       onClick={(e) => {
                         e.stopPropagation();
                         audioManager.playSynth('click', 0.65);
@@ -400,10 +411,12 @@ export function ProjectBreakdownPage({
 function BreakdownBlockRenderer({
   block,
   projectTitle,
+  zoomLabel,
   onOpenLightbox,
 }: {
   block: ProjectContentBlock;
   projectTitle: string;
+  zoomLabel: string;
   onOpenLightbox: (src: string, alt: string) => void;
 }) {
   switch (block.type) {
@@ -449,7 +462,7 @@ function BreakdownBlockRenderer({
           />
           <span className="pointer-events-none absolute bottom-3 right-3 inline-flex items-center gap-1.5 border border-[#00f3ff]/45 bg-[#020408]/85 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-[#e6fcff] uppercase opacity-0 transition-opacity group-hover:opacity-100">
             <Maximize2 className="h-3 w-3 text-[#00f3ff]" aria-hidden="true" />
-            Ampliar
+            {zoomLabel}
           </span>
         </button>
       );

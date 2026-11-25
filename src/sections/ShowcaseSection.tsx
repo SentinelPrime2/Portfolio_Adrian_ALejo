@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -6,6 +6,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { PORTFOLIO_PROJECTS, type PortfolioProject } from '../data/portfolio';
 import { audioManager } from '../audio/AudioManager';
 import { rigState } from '../canvas/rigState';
+import { useLanguage } from '../i18n/LanguageContext';
 import {
   addLaserBeam,
   addNeonFlicker,
@@ -32,6 +33,17 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const playheadRef = useRef<HTMLDivElement | null>(null);
   const revealCardRef = useRef<(idx: number) => void>(() => {});
+  const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion);
+  const { locale, t } = useLanguage();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   useGSAP(
     () => {
@@ -39,7 +51,6 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
       const track = trackRef.current;
       if (!section || !track) return;
 
-      const reduced = prefersReducedMotion();
       const cards = gsap.utils.toArray<HTMLElement>('.showcase-card');
 
       const animateCardInit = (card: HTMLElement, tl: gsap.core.Timeline, pos: number) => {
@@ -61,36 +72,38 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         addNeonFlicker(tl, card.querySelector('.showcase-card-index'), pos + 0.22);
       };
 
-      if (!reduced) {
-        gsap.set(
-          '.showcase-eyebrow, .showcase-title-main, .showcase-neon-accent, .showcase-meta, .showcase-card, .showcase-card-index',
-          { opacity: 0 },
-        );
+      gsap.set(
+        '.showcase-eyebrow, .showcase-title-main, .showcase-neon-accent, .showcase-meta, .showcase-card, .showcase-card-index',
+        { opacity: 0 },
+      );
+      if (!reducedMotion) {
         gsap.set('.showcase-progress-track', { scaleX: 0, transformOrigin: 'left center' });
+      }
 
-        const headerTl = gsap.timeline({ paused: true });
+      const headerTl = gsap.timeline({ paused: true });
 
-        addLaserBeam(headerTl, '[data-showcase-header-laser]', 0, {
-          axis: 'x',
-          duration: 0.45,
-          settleOpacity: 0,
-        });
-        addScanWipe(headerTl, '.showcase-eyebrow', 0.04, { direction: 'right', duration: 0.4 });
-        addScanWipe(headerTl, '.showcase-title-main', 0.1, { direction: 'down', duration: 0.45 });
-        addNeonFlicker(headerTl, '.showcase-neon-accent', 0.2);
-        addNeonFlicker(headerTl, '.showcase-meta', 0.24);
+      addLaserBeam(headerTl, '[data-showcase-header-laser]', 0, {
+        axis: 'x',
+        duration: 0.45,
+        settleOpacity: 0,
+      });
+      addScanWipe(headerTl, '.showcase-eyebrow', 0.04, { direction: 'right', duration: 0.4 });
+      addScanWipe(headerTl, '.showcase-title-main', 0.1, { direction: 'down', duration: 0.45 });
+      addNeonFlicker(headerTl, '.showcase-neon-accent', 0.2);
+      addNeonFlicker(headerTl, '.showcase-meta', 0.24);
+      if (!reducedMotion) {
         headerTl.fromTo(
           '.showcase-progress-track',
           { scaleX: 0 },
           { scaleX: 1, duration: 0.55, ease: 'power3.out', clearProps: 'transform' },
           0.28,
         );
-
-        createOnceScrollTrigger(headerTl, {
-          trigger: section,
-          start: 'top 78%',
-        });
       }
+
+      createOnceScrollTrigger(headerTl, {
+        trigger: section,
+        start: 'top 78%',
+      });
 
       const mm = gsap.matchMedia();
 
@@ -180,7 +193,7 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         });
       });
 
-      mm.add('(max-width: 1023px) and (prefers-reduced-motion: no-preference)', () => {
+      mm.add('(max-width: 1023px), (prefers-reduced-motion: reduce)', () => {
         const revealedMobile = cards.map(() => false);
         const mobileCardTls = cards.map((card) => {
           const tl = gsap.timeline({ paused: true });
@@ -199,7 +212,7 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         });
 
         revealCardRef.current = (idx: number) => {
-          if (!reduced && !revealedMobile[idx]) {
+          if (!revealedMobile[idx]) {
             revealedMobile[idx] = true;
             mobileCardTls[idx]?.play(0);
           }
@@ -208,7 +221,7 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
 
       return () => mm.revert();
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [reducedMotion] },
   );
 
   const handleOpenProject = (project: PortfolioProject) => {
@@ -248,9 +261,9 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
             id="showcase-heading"
             className="mt-1 font-display text-2xl font-bold tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-4xl"
           >
-            <span className="showcase-title-main inline-block">PROYECTOS</span>{' '}
+            <span className="showcase-title-main inline-block">{t('PROYECTOS', 'SELECTED')}</span>{' '}
             <span className="showcase-neon-accent inline-block text-[#00f3ff] tron-glow-cyan">
-              SELECCIONADOS
+              {t('SELECCIONADOS', 'PROJECTS')}
             </span>
           </h2>
         </div>
@@ -260,17 +273,23 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         </span>
       </div>
 
-      {/* Vertical Grid on mobile (< lg); Horizontal Pinned Track on desktop (lg+) */}
+      {/* Vertical Grid on mobile (< lg) or Reduced Motion; Horizontal Pinned Track on normal desktop (lg+) */}
       <div className="w-full lg:overflow-visible">
         <div
           ref={trackRef}
-          className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-5 sm:grid-cols-2 sm:px-8 lg:mx-0 lg:flex lg:w-max lg:max-w-none lg:items-stretch lg:gap-9 lg:px-12 will-change-transform"
+          className={cn(
+            'mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-5 sm:grid-cols-2 sm:px-8',
+            reducedMotion
+              ? 'lg:grid-cols-3 lg:px-12'
+              : 'lg:mx-0 lg:flex lg:w-max lg:max-w-none lg:items-stretch lg:gap-9 lg:px-12 will-change-transform',
+          )}
         >
           {PORTFOLIO_PROJECTS.map((project, idx) => (
             <article
               key={project.id}
               className={cn(
-                'showcase-card group relative flex w-full shrink-0 flex-col border bg-[#060d18]/92 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1.5 lg:w-[430px]',
+                'showcase-card group relative flex w-full shrink-0 flex-col border bg-[#060d18]/92 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1.5',
+                !reducedMotion && 'lg:w-[430px]',
                 CARD_SKIN,
               )}
             >
@@ -281,7 +300,10 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
                 onPointerEnter={() => audioManager.playSynth('hover', 0.5)}
                 onFocus={() => revealCardRef.current(idx)}
                 onClick={() => handleOpenProject(project)}
-                aria-label={`Ver proyecto ${project.index}: ${project.title}`}
+                aria-label={t(
+                  `Ver proyecto ${project.index}: ${project.title}`,
+                  `View project ${project.index}: ${project.title}`,
+                )}
                 data-cursor="pointer"
                 className="flex w-full flex-1 flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#00f3ff]"
               >
@@ -311,7 +333,9 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
                     <h3 className="mt-1 truncate font-display text-lg font-bold text-[#ecf8ff] transition-colors group-hover:text-[#e6fcff]">
                       {project.title}
                     </h3>
-                    <p className="mt-0.5 truncate text-xs text-[#8ba4be]">{project.subtitle}</p>
+                    <p className="mt-0.5 truncate text-xs text-[#8ba4be]">
+                      {locale === 'en' ? project.subtitleEn : project.subtitle}
+                    </p>
                   </div>
 
                   <ArrowUpRight
@@ -325,8 +349,9 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         </div>
       </div>
 
-      {/* Slim 2px Horizontal Scroll Progress Line */}
-      <div className="mx-auto mt-8 hidden w-full max-w-7xl px-12 lg:block">
+      {/* Slim 2px Horizontal Scroll Progress Line (hidden cleanly when showing grid) */}
+      {!reducedMotion && (
+        <div className="mx-auto mt-8 hidden w-full max-w-7xl px-12 lg:block">
         <div className="showcase-progress-track h-[2px] w-full overflow-hidden bg-[#00f3ff]/15">
           <div
             ref={playheadRef}
@@ -334,7 +359,8 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
             className="h-full w-full origin-left bg-gradient-to-r from-[#a020f0] via-[#bd00ff] to-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.45)] will-change-transform"
           />
         </div>
-      </div>
+        </div>
+      )}
     </section>
   );
 }

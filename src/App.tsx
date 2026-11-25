@@ -6,6 +6,7 @@ import { useSmoothScroll } from './animations/useSmoothScroll';
 import { audioManager } from './audio/AudioManager';
 import { rigState } from './canvas/rigState';
 import { findProjectById, type PortfolioProject } from './data/portfolio';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { CustomCursor } from './components/CustomCursor';
 import { SoundToggle } from './components/SoundToggle';
 import { HudOverlay } from './components/HudOverlay';
@@ -32,6 +33,15 @@ function getProjectFromHash(): PortfolioProject | null {
 }
 
 export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
+function AppContent() {
+  const { t } = useLanguage();
   const lenisRef = useSmoothScroll({ lerp: 0.095 });
   const appRef = useRef<HTMLDivElement | null>(null);
   const landingRef = useRef<HTMLDivElement | null>(null);
@@ -183,7 +193,7 @@ export default function App() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:border focus:border-[#00f3ff] focus:bg-[#020408] focus:px-4 focus:py-2.5 focus:font-mono focus:text-xs focus:tracking-[0.14em] focus:text-[#e6fcff] focus:uppercase focus:shadow-[var(--glow-cyan-strong)]"
       >
-        Saltar al contenido principal
+        {t('Saltar al contenido principal', 'Skip to main content')}
       </a>
 
       <div

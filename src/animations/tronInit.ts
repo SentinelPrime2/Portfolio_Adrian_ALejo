@@ -29,6 +29,16 @@ export function addNeonFlicker(
 ): gsap.core.Timeline {
   if (!target) return tl;
 
+  if (prefersReducedMotion()) {
+    tl.fromTo(
+      target,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.32, ease: 'power2.out' },
+      position,
+    );
+    return tl;
+  }
+
   const keyframes =
     mode === 'electric'
       ? [
@@ -70,12 +80,13 @@ export function addWireDraw(
 
   const duration = opts?.duration ?? 0.42;
   const keepVisible = opts?.keepVisible ?? false;
+  const reduced = prefersReducedMotion();
 
   const top = container.querySelector('[data-tron-wire="top"]');
   const right = container.querySelector('[data-tron-wire="right"]');
   const bottom = container.querySelector('[data-tron-wire="bottom"]');
   const left = container.querySelector('[data-tron-wire="left"]');
-  const scan = container.querySelector('[data-tron-scan]');
+  const scan = reduced ? null : container.querySelector('[data-tron-scan]');
 
   const edges = [top, right, bottom, left].filter((el): el is Element => Boolean(el));
   if (edges.length === 0 && !scan) return tl;
@@ -147,8 +158,24 @@ export function addScanWipe(
 ): gsap.core.Timeline {
   if (!target) return tl;
 
-  const direction = opts?.direction ?? 'down';
   const duration = opts?.duration ?? 0.55;
+
+  if (prefersReducedMotion()) {
+    tl.fromTo(
+      target,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: Math.min(duration, 0.36),
+        stagger: opts?.stagger ? Math.min(opts.stagger, 0.03) : undefined,
+        ease: 'power2.out',
+      },
+      position,
+    );
+    return tl;
+  }
+
+  const direction = opts?.direction ?? 'down';
   const fromClip =
     direction === 'right' ? 'inset(0% 100% 0% 0%)' : 'inset(0% 0% 100% 0%)';
 

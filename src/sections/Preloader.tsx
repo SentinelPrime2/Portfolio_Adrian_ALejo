@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { audioManager } from '../audio/AudioManager';
 import { GSAP_EASE } from '../animations/presets';
+import { prefersReducedMotion } from '../animations/tronInit';
 
 gsap.registerPlugin(useGSAP);
 
@@ -20,18 +21,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
   const completeRef = useRef(onComplete);
   completeRef.current = onComplete;
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setDone(true);
-      completeRef.current();
-    }
-  }, []);
-
   const { contextSafe } = useGSAP(
     () => {
       if (done || !overlayRef.current) return;
 
+      const reduced = prefersReducedMotion();
       const counterObj = { val: 0 };
       const stages = [
         'BOOTING RIG-OS v2.6...',
@@ -47,6 +41,35 @@ export function Preloader({ onComplete }: PreloaderProps) {
           completeRef.current();
         },
       });
+
+      if (reduced) {
+        tl.to(counterObj, {
+          val: 100,
+          duration: 0.48,
+          ease: 'power2.out',
+          onUpdate: () => {
+            const pct = Math.round(counterObj.val);
+            if (counterRef.current) {
+              counterRef.current.textContent = `${String(pct).padStart(3, '0')}%`;
+            }
+            if (statusRef.current) {
+              const idx = Math.min(stages.length - 1, Math.floor((pct / 100) * stages.length));
+              statusRef.current.textContent = stages[idx];
+            }
+          },
+        })
+          .to(
+            progressBarRef.current,
+            { scaleX: 1, duration: 0.48, ease: 'power2.out' },
+            '<',
+          )
+          .to(overlayRef.current, {
+            opacity: 0,
+            duration: 0.28,
+            ease: 'power2.out',
+          });
+        return;
+      }
 
       tl.from('.preloader-reveal', {
         opacity: 0,

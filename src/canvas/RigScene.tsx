@@ -656,7 +656,8 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
     const isNarrow = size.width < 1024;
-    const motionScale = reducedMotion ? 0 : 1;
+    const isShortDesktop = !isNarrow && size.height < 740;
+    const motionScale = reducedMotion ? 0.35 : 1;
 
     if (rigState.scrollVelocity !== 0) {
       rigState.scrollVelocity *= Math.pow(0.92, dt * 60);
@@ -766,11 +767,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
             : sec === 3
               ? 0.72
               : 0.76
-        : sec === 2
-          ? 1.54
-          : sec === 3
-            ? 1.32
-            : 1.46;
+        : (sec === 2 ? 1.54 : sec === 3 ? 1.32 : 1.46) * (isShortDesktop ? 0.88 : 1);
       const nextScale = THREE.MathUtils.lerp(rootRef.current.scale.x, baseScale, 1 - Math.exp(-4.5 * dt));
       rootRef.current.scale.setScalar(nextScale);
       const effectiveRotY = THREE.MathUtils.lerp(targetRotY, 0.8, wR);
@@ -1214,24 +1211,6 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
     let bootBonesBoost = 0;
     let bootEmissiveBoost = 0;
 
-    if (reducedMotion && !anim.bootFinished) {
-      anim.bootFinished = true;
-      anim.bootCtrlRevealed = true;
-      setRigShowWidgets(true);
-      rigData.storedMaterials.forEach((s) => {
-        s.material.clippingPlanes = null;
-        s.material.needsUpdate = true;
-      });
-      rigData.xrayWireMat.clippingPlanes = null;
-      rigData.xrayWireMat.color.copy(CYAN_MID);
-      rigData.xrayWireMat.needsUpdate = true;
-      rigData.hexOuterMat.opacity = 0.92;
-      rigData.hexInnerMat.opacity = 0.9;
-      if (plinthRef.current) plinthRef.current.scale.setScalar(1);
-      if (scanRingRef.current) scanRingRef.current.visible = false;
-      if (solidRingRef.current) solidRingRef.current.visible = false;
-    }
-
     if (!anim.bootFinished) {
       if (!anim.bootApplied) {
         rigData.storedMaterials.forEach((s) => {
@@ -1258,7 +1237,8 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
         if (scanRingRef.current) scanRingRef.current.visible = false;
         if (solidRingRef.current) solidRingRef.current.visible = false;
       } else {
-        anim.bootClock += dt;
+        // In reduced-motion mode, keep the signature laser scanner rezzing effect ~40% quicker and without bone strobe
+        anim.bootClock += dt * (reducedMotion ? 1.45 : 1);
         const t = anim.bootClock;
 
         // Phase 0 (0.0s - 0.42s): Smooth plinth ignition (WCAG 2.3.1 safe)
@@ -1294,7 +1274,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
         bootWireOpacity = wireU > 0 ? 0.82 * wireSwell * wireEndFade : 0;
 
         // Subtle DEF skeleton glimpse floating inside the trailing wireframe band
-        if (t > 0.35 && t < 3.45) {
+        if (!reducedMotion && t > 0.35 && t < 3.45) {
           const skelPhase = (t - 0.35) / 3.1;
           bootBonesBoost = Math.sin(skelPhase * Math.PI) * 0.38;
         }
@@ -1509,7 +1489,13 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
 /**
  * Calm, atmospheric simplex-noise neon vertex particles.
  */
-function ReactiveParticles({ reducedMotion }: { reducedMotion: boolean }) {
+function ReactiveParticles({
+  reducedMotion,
+  lowPerf,
+}: {
+  reducedMotion: boolean;
+  lowPerf: boolean;
+}) {
   const pointsRef = useRef<THREE.Points>(null);
   const count = 650;
   const noise3D = useMemo(() => createNoise3D(), []);
@@ -1569,8 +1555,12 @@ function ReactiveParticles({ reducedMotion }: { reducedMotion: boolean }) {
     };
   }, [geometry, material]);
 
+  useEffect(() => {
+    material.opacity = reducedMotion || lowPerf ? 0.24 : 0.44;
+  }, [material, reducedMotion, lowPerf]);
+
   useFrame((state, delta) => {
-    if (!pointsRef.current || reducedMotion) return;
+    if (!pointsRef.current || reducedMotion || lowPerf) return;
     const dt = Math.min(delta, 0.05);
     const t = state.clock.elapsedTime * 0.25;
     const posAttr = geometry.getAttribute('position') as THREE.BufferAttribute;
@@ -1654,9 +1644,39 @@ function RetroFloorGrid({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
+function LowFpsGuard({
+  enabled,
+  onDegrade,
+}: {
+  enabled: boolean;
+  onDegrade: () => void;
+}) {
+  const accumRef = useRef({ frames: 0, time: 0, triggered: false });
+
+  useFrame((_, delta) => {
+    const state = accumRef.current;
+    if (!enabled || state.triggered || !rigState.bootReady) return;
+    state.frames += 1;
+    state.time += Math.min(delta, 0.25);
+    if (state.frames >= 60) {
+      const avgDt = state.time / state.frames;
+      if (avgDt > 0.05) {
+        state.triggered = true;
+        onDegrade();
+      } else {
+        state.frames = 0;
+        state.time = 0;
+      }
+    }
+  });
+
+  return null;
+}
+
 export function RigScene() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isDesktopPost, setIsDesktopPost] = useState(true);
+  const [lowPerf, setLowPerf] = useState(false);
   const [contextLost, setContextLost] = useState(false);
   const glDomRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -1713,11 +1733,24 @@ export function RigScene() {
     >
       <CanvasErrorBoundary>
         <Canvas
-          dpr={isDesktopPost ? [1, 1.75] : [1, 1.5]}
+          dpr={lowPerf ? 1 : isDesktopPost ? [1, 1.75] : [1, 1.5]}
           camera={{ position: [0, 0.25, 5.4], fov: 42 }}
           onCreated={({ gl }) => {
             gl.localClippingEnabled = true;
             glDomRef.current = gl.domElement;
+
+            try {
+              const ctx = gl.getContext();
+              const dbg = ctx.getExtension('WEBGL_debug_renderer_info');
+              if (dbg) {
+                const renderer = String(ctx.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || '');
+                if (/swiftshader|llvmpipe|software|microsoft basic render|lavapipe/i.test(renderer)) {
+                  setLowPerf(true);
+                }
+              }
+            } catch {
+              // Ignore extension lookup failures
+            }
           }}
           gl={{
             antialias: true,
@@ -1733,14 +1766,16 @@ export function RigScene() {
           <pointLight position={[4, 1.5, -1.8]} intensity={4.0} color="#00f3ff" />
           <pointLight position={[0.5, -1.5, 3]} intensity={1.3} color="#00a3cc" />
 
+          <LowFpsGuard enabled={!lowPerf} onDegrade={() => setLowPerf(true)} />
+
           <Suspense fallback={null}>
             <FinnCharacterRig reducedMotion={reducedMotion} />
           </Suspense>
 
-          <ReactiveParticles reducedMotion={reducedMotion} />
+          <ReactiveParticles reducedMotion={reducedMotion} lowPerf={lowPerf} />
           <RetroFloorGrid reducedMotion={reducedMotion} />
 
-          {isDesktopPost && !reducedMotion && (
+          {isDesktopPost && !reducedMotion && !lowPerf && (
             <EffectComposer multisampling={0}>
               <Bloom
                 mipmapBlur

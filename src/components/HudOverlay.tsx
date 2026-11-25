@@ -3,11 +3,12 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Menu, X } from 'lucide-react';
 import { audioManager } from '../audio/AudioManager';
+import { useLanguage } from '../i18n/LanguageContext';
+import { LanguageToggle } from './LanguageToggle';
 import {
   addLaserBeam,
   addNeonFlicker,
   addScanWipe,
-  prefersReducedMotion,
 } from '../animations/tronInit';
 import { cn } from '../utils/cn';
 
@@ -20,15 +21,16 @@ interface HudOverlayProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'hero', label: 'INICIO' },
-  { id: 'showcase', label: 'PROYECTOS' },
-  { id: 'pipeline', label: 'PROCESO' },
-  { id: 'contact', label: 'CONTACTO' },
+  { id: 'hero', labelEs: 'INICIO', labelEn: 'HOME' },
+  { id: 'showcase', labelEs: 'PROYECTOS', labelEn: 'PROJECTS' },
+  { id: 'pipeline', labelEs: 'PROCESO', labelEn: 'PIPELINE' },
+  { id: 'contact', labelEs: 'CONTACTO', labelEn: 'CONTACT' },
 ] as const;
 
 export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverlayProps) {
   const headerRef = useRef<HTMLElement | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { locale, t } = useLanguage();
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -43,7 +45,7 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
 
   useGSAP(
     () => {
-      if (!headerRef.current || prefersReducedMotion()) return;
+      if (!headerRef.current) return;
 
       if (!ready) {
         gsap.set('.hud-sp-badge, .hud-brand-text, .hud-nav-item, .hud-role-tag', {
@@ -95,10 +97,10 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
         <button
           type="button"
           data-cursor="magnetic"
-          aria-label="SentinelPrime — Ir al inicio"
+          aria-label={t('SentinelPrime — Ir al inicio', 'SentinelPrime — Back to top')}
           onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
           onClick={() => navigateFromMenu('hero')}
-          className="flex min-h-[44px] items-center gap-2.5 text-left"
+          className="flex min-h-[44px] items-center gap-2 text-left sm:gap-2.5"
         >
           <span
             aria-hidden="true"
@@ -106,14 +108,15 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
           >
             SP
           </span>
-          <span className="hud-brand-text font-display text-xs font-bold tracking-[0.22em] text-[#ecf8ff] uppercase sm:text-sm">
+          <span className="hud-brand-text font-display text-[11px] font-bold tracking-[0.16em] text-[#ecf8ff] uppercase sm:text-sm sm:tracking-[0.22em]">
             SENTINELPRIME
           </span>
         </button>
 
-        <nav aria-label="Navegación principal" className="hidden items-center gap-6 md:flex">
+        <nav aria-label={t('Navegación principal', 'Main navigation')} className="hidden items-center gap-6 md:flex">
           {NAV_ITEMS.map((item, idx) => {
             const isActive = activeSection === idx;
+            const label = locale === 'en' ? item.labelEn : item.labelEs;
             return (
               <button
                 key={item.id}
@@ -127,7 +130,7 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
                   isActive ? 'text-[#e6fcff]' : 'text-[#8ba4be] hover:text-[#ecf8ff]',
                 )}
               >
-                {item.label}
+                {label}
                 {isActive && (
                   <span
                     aria-hidden="true"
@@ -139,33 +142,42 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
           })}
         </nav>
 
-        <span className="hud-role-tag hidden font-mono text-[10px] tracking-[0.2em] text-[#00f3ff] uppercase sm:inline">
-          3D RIGGING · ANIM
-        </span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageToggle className="hud-nav-item" />
 
-        <button
-          type="button"
-          onClick={() => {
-            audioManager.playSynth('click', 0.7);
-            setMobileOpen((v) => !v);
-          }}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav-panel"
-          aria-label={mobileOpen ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'}
-          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center border border-[#00f3ff]/35 bg-[#050b14]/85 text-[#e6fcff] transition-colors hover:border-[#bd00ff] md:hidden"
-        >
-          {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
-        </button>
+          <span className="hud-role-tag hidden font-mono text-[10px] tracking-[0.2em] text-[#00f3ff] uppercase lg:inline">
+            3D RIGGING · ANIM
+          </span>
+
+          <button
+            type="button"
+            onClick={() => {
+              audioManager.playSynth('click', 0.7);
+              setMobileOpen((v) => !v);
+            }}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-panel"
+            aria-label={
+              mobileOpen
+                ? t('Cerrar menú de navegación', 'Close navigation menu')
+                : t('Abrir menú de navegación', 'Open navigation menu')
+            }
+            className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center border border-[#00f3ff]/35 bg-[#050b14]/85 text-[#e6fcff] transition-colors hover:border-[#bd00ff] sm:min-h-[44px] sm:min-w-[44px] md:hidden"
+          >
+            {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
         <nav
           id="mobile-nav-panel"
-          aria-label="Navegación móvil"
+          aria-label={t('Navegación móvil', 'Mobile navigation')}
           className="mx-auto mt-1 flex max-w-7xl flex-col border border-[#00f3ff]/30 bg-[#020408]/95 p-2 backdrop-blur-[16px] md:hidden"
         >
           {NAV_ITEMS.map((item, idx) => {
             const isActive = activeSection === idx;
+            const label = locale === 'en' ? item.labelEn : item.labelEs;
             return (
               <button
                 key={item.id}
@@ -179,8 +191,8 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
                     : 'border-l-transparent text-[#8ba4be] hover:bg-white/5 hover:text-[#ecf8ff]',
                 )}
               >
-                <span>{item.label}</span>
-                {isActive && <span className="text-[10px] text-[#00f3ff]">ACTIVO</span>}
+                <span>{label}</span>
+                {isActive && <span className="text-[10px] text-[#00f3ff]">{t('ACTIVO', 'ACTIVE')}</span>}
               </button>
             );
           })}
