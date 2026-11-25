@@ -5,14 +5,17 @@ import { useGSAP } from '@gsap/react';
 import { useSmoothScroll } from './animations/useSmoothScroll';
 import { audioManager } from './audio/AudioManager';
 import { rigState } from './canvas/rigState';
+import { findProjectById, type PortfolioProject } from './data/portfolio';
 import { CustomCursor } from './components/CustomCursor';
 import { SoundToggle } from './components/SoundToggle';
 import { HudOverlay } from './components/HudOverlay';
 import { Preloader } from './sections/Preloader';
 import { HeroSection } from './sections/HeroSection';
 import { ShowcaseSection } from './sections/ShowcaseSection';
+import { ProjectBreakdownPage } from './sections/ProjectBreakdownPage';
 import { TechPipelineSection } from './sections/TechPipelineSection';
 import { ContactSection } from './sections/ContactSection';
+import { cn } from './utils/cn';
 
 const RigScene = lazy(() =>
   import('./canvas/RigScene').then((m) => ({ default: m.RigScene })),
@@ -22,12 +25,72 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const SECTION_IDS = ['hero', 'showcase', 'pipeline', 'contact'] as const;
 
+function getProjectFromHash(): PortfolioProject | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.hash.match(/^#\/proyecto\/([^/?#]+)/);
+  return findProjectById(match?.[1]);
+}
+
 export default function App() {
   const lenisRef = useSmoothScroll({ lerp: 0.095 });
   const appRef = useRef<HTMLDivElement | null>(null);
+  const landingRef = useRef<HTMLDivElement | null>(null);
   const [preloaderDone, setPreloaderDone] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const [activeProject, setActiveProject] = useState<PortfolioProject | null>(() =>
+    getProjectFromHash(),
+  );
   const lastSectionRef = useRef(0);
+
+  // Sync URL hash (#/proyecto/<id>) with browser Back / Forward navigation
+  useEffect(() => {
+    const syncFromHash = () => {
+      setActiveProject(getProjectFromHash());
+    };
+    window.addEventListener('hashchange', syncFromHash);
+    window.addEventListener('popstate', syncFromHash);
+    return () => {
+      window.removeEventListener('hashchange', syncFromHash);
+      window.removeEventListener('popstate', syncFromHash);
+    };
+  }, []);
+
+  // Pause Lenis, lock body overflow, and keep background landing inert while viewing a Case Study
+  useEffect(() => {
+    if (!activeProject) return;
+
+    const lenis = lenisRef.current;
+    const landing = landingRef.current as (HTMLDivElement & { inert: boolean }) | null;
+    lenis?.stop();
+    if (landing) landing.inert = true;
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.documentElement.style.overflow = prevOverflow;
+      if (landing) landing.inert = false;
+      lenisRef.current?.start();
+    };
+  }, [activeProject, lenisRef]);
+
+  const openProject = useCallback((project: PortfolioProject) => {
+    const targetHash = `#/proyecto/${project.id}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState(null, '', targetHash);
+    }
+    setActiveProject(project);
+  }, []);
+
+  const closeProject = useCallback(() => {
+    if (window.location.hash.startsWith('#/proyecto/')) {
+      window.history.replaceState(
+        null,
+        '',
+        `${window.location.pathname}${window.location.search}`,
+      );
+    }
+    setActiveProject(null);
+  }, []);
 
   // Normalized pointer tracking for the 3D rig & HUD (zero React re-renders)
   useEffect(() => {
@@ -123,26 +186,44 @@ export default function App() {
         Saltar al contenido principal
       </a>
 
-      <Preloader
-        onComplete={() => {
-          rigState.bootReady = true;
-          setPreloaderDone(true);
-        }}
+      <div
+        ref={landingRef}
+        className={cn(
+          'transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+          activeProject && '-translate-x-10 scale-[0.985] will-change-transform',
+        )}
+      >
+        <Preloader
+          onComplete={() => {
+            rigState.bootReady = true;
+            setPreloaderDone(true);
+          }}
+        />
+        <Suspense fallback={null}>
+          <RigScene />
+        </Suspense>
+        <CustomCursor />
+        <HudOverlay
+          activeSection={activeSection}
+          onNavigate={handleNavigate}
+          ready={preloaderDone}
+        />
+
+        <main id="main-content" tabIndex={-1} className="relative z-10 w-full outline-none">
+          <HeroSection ready={preloaderDone} onNavigate={handleNavigate} />
+          <ShowcaseSection onSelectProject={openProject} />
+          <TechPipelineSection />
+          <ContactSection onBackToTop={handleBackToTop} />
+        </main>
+      </div>
+
+      <ProjectBreakdownPage
+        project={activeProject}
+        onClose={closeProject}
+        onSelectProject={openProject}
       />
-      <Suspense fallback={null}>
-        <RigScene />
-      </Suspense>
-      <CustomCursor />
-      <HudOverlay activeSection={activeSection} onNavigate={handleNavigate} ready={preloaderDone} />
 
-      <main id="main-content" tabIndex={-1} className="relative z-10 w-full outline-none">
-        <HeroSection ready={preloaderDone} onNavigate={handleNavigate} />
-        <ShowcaseSection />
-        <TechPipelineSection />
-        <ContactSection onBackToTop={handleBackToTop} />
-      </main>
-
-      <SoundToggle />
+      <SoundToggle className="z-[80]" />
     </div>
   );
 }

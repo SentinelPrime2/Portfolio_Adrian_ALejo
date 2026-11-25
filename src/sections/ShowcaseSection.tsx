@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { AnimatePresence, motion } from 'motion/react';
-import { ArrowUpRight, ExternalLink, X } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { PORTFOLIO_PROJECTS, type PortfolioProject } from '../data/portfolio';
 import { audioManager } from '../audio/AudioManager';
 import { rigState } from '../canvas/rigState';
-import { motionTransitions } from '../animations/presets';
 import {
   addLaserBeam,
   addNeonFlicker,
@@ -26,16 +23,15 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 const CARD_SKIN =
   'tron-glass tron-card-bevel border-[#00f3ff]/[0.22] hover:border-[#bd00ff] hover:shadow-[var(--glow-violet-border)]';
 
-export function ShowcaseSection() {
+interface ShowcaseSectionProps {
+  onSelectProject: (project: PortfolioProject) => void;
+}
+
+export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const playheadRef = useRef<HTMLDivElement | null>(null);
   const revealCardRef = useRef<(idx: number) => void>(() => {});
-  const modalPanelRef = useRef<HTMLDivElement | null>(null);
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
-  const lastFocusedRef = useRef<HTMLElement | null>(null);
-
-  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
   useGSAP(
     () => {
@@ -215,56 +211,9 @@ export function ShowcaseSection() {
     { scope: sectionRef },
   );
 
-  useEffect(() => {
-    if (!selectedProject) return;
-
-    const appShell = document.getElementById('app-shell') as (HTMLElement & { inert: boolean }) | null;
-    if (appShell) appShell.inert = true;
-    const prevOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = 'hidden';
-
-    const focusRaf = window.requestAnimationFrame(() => {
-      closeBtnRef.current?.focus();
-    });
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        audioManager.playSynth('click', 0.65);
-        setSelectedProject(null);
-        return;
-      }
-
-      if (e.key === 'Tab' && modalPanelRef.current) {
-        const focusables = modalPanelRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusables.length === 0) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.cancelAnimationFrame(focusRaf);
-      window.removeEventListener('keydown', onKeyDown);
-      if (appShell) appShell.inert = false;
-      document.documentElement.style.overflow = prevOverflow;
-      lastFocusedRef.current?.focus();
-    };
-  }, [selectedProject]);
-
-  const openInspector = (project: PortfolioProject) => {
-    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+  const handleOpenProject = (project: PortfolioProject) => {
     audioManager.playSynth('click', 0.9);
-    setSelectedProject(project);
+    onSelectProject(project);
   };
 
   return (
@@ -307,7 +256,7 @@ export function ShowcaseSection() {
         </div>
 
         <span className="showcase-meta hidden font-mono text-xs tracking-[0.18em] text-[#8ba4be] uppercase sm:block">
-          THE ROOKIES · 01 — 06
+          PORTFOLIO · 01 — 06
         </span>
       </div>
 
@@ -331,7 +280,7 @@ export function ShowcaseSection() {
                 type="button"
                 onPointerEnter={() => audioManager.playSynth('hover', 0.5)}
                 onFocus={() => revealCardRef.current(idx)}
-                onClick={() => openInspector(project)}
+                onClick={() => handleOpenProject(project)}
                 aria-label={`Ver proyecto ${project.index}: ${project.title}`}
                 data-cursor="pointer"
                 className="flex w-full flex-1 flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#00f3ff]"
@@ -386,110 +335,6 @@ export function ShowcaseSection() {
           />
         </div>
       </div>
-
-      {/* Clean Focused Project Modal (Portal above fixed HUD) */}
-      {typeof document !== 'undefined' &&
-        createPortal(
-          <AnimatePresence>
-            {selectedProject && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => {
-                  audioManager.playSynth('click', 0.65);
-                  setSelectedProject(null);
-                }}
-                className="fixed inset-0 z-[100] flex items-center justify-center bg-[#020408]/88 p-4 backdrop-blur-md sm:p-6"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="inspector-title"
-              >
-                <motion.div
-                  ref={modalPanelRef}
-                  initial={{ opacity: 0, scale: 0.96, y: 16 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.97, y: 10 }}
-                  transition={motionTransitions.springSnappy}
-                  onClick={(e) => e.stopPropagation()}
-                  data-lenis-prevent
-                  className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-[#00f3ff]/40 bg-[#050b14]/95 shadow-[var(--glow-cyan-strong)]"
-                >
-                  {/* Close button floating cleanly (44x44px target) */}
-                  <button
-                    ref={closeBtnRef}
-                    type="button"
-                    data-cursor="magnetic"
-                    onPointerEnter={() => audioManager.playSynth('hover', 0.6)}
-                    onClick={() => {
-                      audioManager.playSynth('click', 0.7);
-                      setSelectedProject(null);
-                    }}
-                    aria-label="Cerrar proyecto"
-                    className="absolute right-3 top-3 z-20 inline-flex h-11 w-11 items-center justify-center border border-[#00f3ff]/40 bg-[#020408]/90 text-[#ecf8ff] transition-colors hover:border-[#bd00ff] hover:text-[#f5e6ff]"
-                  >
-                    <X className="h-4 w-4" aria-hidden="true" />
-                  </button>
-
-                  {/* Hi-Res Real Thumbnail */}
-                  <div className="aspect-[4/3] w-full overflow-hidden border-b border-[#00f3ff]/20 bg-[#020408]">
-                    <img
-                      src={selectedProject.thumbnailHiRes}
-                      alt={selectedProject.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-
-                  {/* Concise Breakdown */}
-                  <div className="space-y-5 p-6 sm:p-7">
-                    <div>
-                      <div className="font-mono text-[10px] tracking-[0.2em] text-[#00f3ff] uppercase">
-                        {selectedProject.category} · {selectedProject.software.join(' · ')}
-                      </div>
-                      <h3
-                        id="inspector-title"
-                        className="mt-1 font-display text-2xl font-bold text-[#ecf8ff] sm:text-3xl"
-                      >
-                        {selectedProject.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-sm leading-relaxed text-[#8ba4be]">
-                      {selectedProject.summary}
-                    </p>
-
-                    <ul className="space-y-2 border-l-2 border-[#bd00ff] pl-4 text-sm text-[#ecf8ff]">
-                      {selectedProject.highlights.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-
-                    <div className="pt-2">
-                      <a
-                        href={selectedProject.rookiesUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        data-cursor="magnetic"
-                        onPointerEnter={() => audioManager.playSynth('hover', 0.65)}
-                        onClick={() => audioManager.playSynth('success', 0.75)}
-                        className="tron-glass-btn-cyan inline-flex items-center gap-2 px-6 py-3 font-display text-xs font-bold tracking-[0.14em] uppercase hover:scale-[1.02]"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                        <span>
-                          Ver completo en The Rookies
-                          <span className="sr-only"> (se abre en una nueva pestaña)</span>
-                        </span>
-                        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </a>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
     </section>
   );
 }
