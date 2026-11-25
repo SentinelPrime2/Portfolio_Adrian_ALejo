@@ -15,6 +15,7 @@ import { HeroSection } from './sections/HeroSection';
 import { ShowcaseSection } from './sections/ShowcaseSection';
 import { ProjectBreakdownPage } from './sections/ProjectBreakdownPage';
 import { TechPipelineSection } from './sections/TechPipelineSection';
+import { AboutSection } from './sections/AboutSection';
 import { ContactSection } from './sections/ContactSection';
 
 const RigScene = lazy(() =>
@@ -23,7 +24,7 @@ const RigScene = lazy(() =>
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const SECTION_IDS = ['hero', 'showcase', 'pipeline', 'contact'] as const;
+const SECTION_IDS = ['hero', 'showcase', 'pipeline', 'about', 'contact'] as const;
 
 function getProjectFromHash(): PortfolioProject | null {
   if (typeof window === 'undefined') return null;
@@ -216,6 +217,7 @@ function AppContent() {
           <HeroSection ready={preloaderDone} onNavigate={handleNavigate} />
           <ShowcaseSection onSelectProject={openProject} />
           <TechPipelineSection />
+          <AboutSection />
           <ContactSection onBackToTop={handleBackToTop} />
         </main>
       </div>

@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { id: 'hero', labelEs: 'INICIO', labelEn: 'HOME' },
   { id: 'showcase', labelEs: 'PROYECTOS', labelEn: 'PROJECTS' },
   { id: 'pipeline', labelEs: 'PROCESO', labelEn: 'PIPELINE' },
+  { id: 'about', labelEs: 'SOBRE MÍ', labelEn: 'ABOUT' },
   { id: 'contact', labelEs: 'CONTACTO', labelEn: 'CONTACT' },
 ] as const;
 

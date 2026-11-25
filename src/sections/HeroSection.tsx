@@ -146,7 +146,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
                 audioManager.playSynth('click', 0.9);
                 onNavigate('showcase');
               }}
-              className="hero-cta-primary tron-glass-btn-cyan group relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 py-2.5 font-display text-xs font-bold tracking-[0.14em] uppercase active:scale-[0.97] lg:gap-2.5 lg:px-7 lg:py-3.5 lg:text-sm"
+              className="hero-cta-primary tron-glass-btn-cyan obsidian-dichroic-panel dichroic-hover-border group relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 py-2.5 font-display text-xs font-bold tracking-[0.14em] uppercase active:scale-[0.97] lg:gap-2.5 lg:px-7 lg:py-3.5 lg:text-sm"
             >
               <TronWireOverlay variant="cyan" withScan />
               <span>{t('Ver Proyectos', 'View Projects')}</span>

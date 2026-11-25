@@ -143,8 +143,10 @@ export function CustomCursor() {
 
           const grad = ctx.createLinearGradient(tailPt.x, tailPt.y, headPt.x, headPt.y);
           grad.addColorStop(0, 'rgba(189, 0, 255, 0)');
-          grad.addColorStop(0.45, `rgba(189, 0, 255, ${(0.55 * alpha).toFixed(3)})`);
-          grad.addColorStop(1, `rgba(0, 243, 255, ${(0.95 * alpha).toFixed(3)})`);
+          grad.addColorStop(0.35, `rgba(189, 0, 255, ${(0.55 * alpha).toFixed(3)})`);
+          grad.addColorStop(0.65, `rgba(59, 130, 246, ${(0.75 * alpha).toFixed(3)})`);
+          grad.addColorStop(0.88, `rgba(0, 243, 255, ${(0.92 * alpha).toFixed(3)})`);
+          grad.addColorStop(1, `rgba(230, 252, 255, ${(0.98 * alpha).toFixed(3)})`);
 
           ctx.beginPath();
           ctx.moveTo(p0.x, p0.y);

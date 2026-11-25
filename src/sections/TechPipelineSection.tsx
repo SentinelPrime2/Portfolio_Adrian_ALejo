@@ -475,8 +475,8 @@ export function TechPipelineSection() {
             >
               <div
                 ref={spineRef}
-                style={{ transform: 'scaleY(0.05)' }}
-                className="h-full w-full origin-top bg-gradient-to-b from-[#a020f0] via-[#bd00ff] to-[#00f3ff] will-change-transform"
+                style={{ transform: 'scaleY(0.05)', background: 'var(--iridescent-line)' }}
+                className="h-full w-full origin-top will-change-transform"
               />
             </div>
 
@@ -570,7 +570,7 @@ export function TechPipelineSection() {
               )}
             </div>
 
-            <div className="rig-lab-console tron-glass relative border border-[#00f3ff]/30 border-t-2 border-t-[#bd00ff] p-3.5 shadow-[var(--glow-cyan-border)] sm:p-5">
+            <div className="rig-lab-console obsidian-dichroic-panel relative border border-[#00f3ff]/30 border-t-2 border-t-[#bd00ff] p-3.5 shadow-[var(--glow-cyan-border)] sm:p-5">
               <TronWireOverlay variant="dual" withScan />
 
               {/* 4 HUD Corner Brackets */}

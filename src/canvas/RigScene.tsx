@@ -346,7 +346,80 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
       toneMapped: false,
     });
 
-    // 6. Sharp hexagonal turntable plinth: Outer Ultraviolet (#BD00FF) + Inner Encom Cyan (#00F3FF)
+    // 6. Sharp hexagonal turntable plinth: Procedural GLSL Liquid Chrome Shader + Outer Ultraviolet + Inner Cyan
+    const hexBaseGeo = new THREE.CircleGeometry(0.45, 6);
+    const hexBaseMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uOpacity: { value: 0.92 },
+      },
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        uniform float uTime;
+        uniform float uOpacity;
+        varying vec2 vUv;
+
+        // Smooth procedural liquid-metal wave field (infinite resolution)
+        float waveField(vec2 p, float t) {
+          float w = sin(p.x * 3.8 + t * 0.55 + cos(p.y * 3.1 - t * 0.42));
+          w += 0.65 * cos(p.y * 4.6 - t * 0.48 + sin(p.x * 4.2 + t * 0.35));
+          w += 0.38 * sin((p.x + p.y) * 6.2 + t * 0.65);
+          return w * 0.5 + 0.5;
+        }
+
+        vec3 iridescentSpectrum(float t) {
+          vec3 cCyan   = vec3(0.00, 0.95, 1.00); // #00F3FF
+          vec3 cCobalt = vec3(0.23, 0.51, 0.96); // #3B82F6
+          vec3 cViolet = vec3(0.74, 0.00, 1.00); // #BD00FF
+          vec3 cRose   = vec3(0.95, 0.45, 0.72); // #F472B6
+          vec3 cPearl  = vec3(0.92, 0.99, 1.00); // #EBFCFF
+
+          float s = fract(t);
+          if (s < 0.25) return mix(cCyan, cCobalt, s / 0.25);
+          if (s < 0.50) return mix(cCobalt, cViolet, (s - 0.25) / 0.25);
+          if (s < 0.75) return mix(cViolet, cRose, (s - 0.50) / 0.25);
+          return mix(cRose, cPearl, (s - 0.75) / 0.25);
+        }
+
+        void main() {
+          vec2 centered = (vUv - 0.5) * 2.0;
+          float t = uTime;
+
+          // Domain warping for silky fluid chrome folds
+          vec2 warp = vec2(
+            waveField(centered * 1.4, t),
+            waveField(centered * 1.4 + vec2(3.7, 1.9), t * 0.9)
+          );
+          float f = waveField(centered * 1.6 + warp * 0.95, t);
+
+          // Approximate slope for metallic specular ridges
+          float eps = 0.03;
+          float fx = waveField((centered + vec2(eps, 0.0)) * 1.6 + warp * 0.95, t);
+          float fy = waveField((centered + vec2(0.0, eps)) * 1.6 + warp * 0.95, t);
+          float ridge = clamp(length(vec2(fx - f, fy - f)) * 11.0, 0.0, 1.0);
+
+          vec3 baseDark = vec3(0.025, 0.055, 0.11);
+          vec3 irid = iridescentSpectrum(f * 1.15 + ridge * 0.35 + t * 0.05);
+          vec3 color = mix(baseDark, irid, 0.55 + 0.42 * ridge);
+          color += vec3(0.9, 0.98, 1.0) * pow(ridge, 3.0) * 0.55;
+
+          // Subtle center glow & clean dark edge contrast under Finn's shoes
+          float radial = length(centered);
+          color *= mix(0.88, 1.08, smoothstep(0.0, 0.85, radial));
+
+          gl_FragColor = vec4(color, uOpacity);
+        }
+      `,
+    });
     const hexOuterGeo = new THREE.TorusGeometry(0.62, 0.014, 4, 6);
     const hexInnerGeo = new THREE.TorusGeometry(0.45, 0.009, 4, 6);
     const hexOuterMat = new THREE.MeshBasicMaterial({
@@ -415,6 +488,8 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
       ikTargetBoxMat,
       ikTargetCoreGeo,
       ikTargetCoreMat,
+      hexBaseGeo,
+      hexBaseMat,
       hexOuterGeo,
       hexInnerGeo,
       hexOuterMat,
@@ -514,6 +589,8 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
       rigData.ikTargetBoxMat.dispose();
       rigData.ikTargetCoreGeo.dispose();
       rigData.ikTargetCoreMat.dispose();
+      rigData.hexBaseGeo.dispose();
+      rigData.hexBaseMat.dispose();
       rigData.hexOuterGeo.dispose();
       rigData.hexInnerGeo.dispose();
       rigData.hexOuterMat.dispose();
@@ -668,7 +745,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
 
     // 1. Advance continuous phase accumulators driven dramatically by Energy/Speed slider
     const sec = rigState.activeSection;
-    const isContactFarewell = sec === 3;
+    const isContactFarewell = sec === 4;
     const rawEnergy = rigState.actingEnergy;
     const speedMul = (0.12 + Math.pow(rawEnergy, 1.4) * 3.1) * motionScale;
     const waveSpeed = isContactFarewell ? Math.max(speedMul, 1.05 * motionScale) : speedMul;
@@ -748,6 +825,10 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
         anim.targetPos.set(0, -1.32, 0.22);
       }
       targetRotY = mechAngle;
+    } else if (sec === 3) {
+      // About Me section: step cleanly below viewport so portrait, bio & CV stay 100% uncluttered
+      anim.targetPos.set(0, -5.2, -2.2);
+      targetRotY = -0.22;
     } else {
       anim.targetPos.set(
         isNarrow ? 0 : -Math.min(viewport.width * 0.325, 2.22),
@@ -764,10 +845,11 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
           ? 0.86
           : sec === 2 && rigState.pipelineLabFocused
             ? 0.78
-            : sec === 3
+            : sec === 4
               ? 0.72
               : 0.76
-        : (sec === 2 ? 1.54 : sec === 3 ? 1.32 : 1.46) * (isShortDesktop ? 0.88 : 1);
+        : (sec === 2 ? 1.54 : sec === 3 ? 0.92 : sec === 4 ? 1.32 : 1.46) *
+          (isShortDesktop ? 0.88 : 1);
       const nextScale = THREE.MathUtils.lerp(rootRef.current.scale.x, baseScale, 1 - Math.exp(-4.5 * dt));
       rootRef.current.scale.setScalar(nextScale);
       const effectiveRotY = THREE.MathUtils.lerp(targetRotY, 0.8, wR);
@@ -781,6 +863,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
 
     if (plinthRef.current && !reducedMotion) {
       plinthRef.current.rotation.z += (0.2 + wR * 1.4) * speedMul * dt;
+      rigData.hexBaseMat.uniforms.uTime.value += dt * (0.85 + wR * 1.2);
     }
 
     // 4. Layered pointer tracking (overridden cleanly by dragged Eye Aim target in IK Eye mode!)
@@ -1150,6 +1233,8 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
       targetMood = periodicSmile > 0.45 ? 0.38 : -0.42;
     } else if (sec === 2) {
       targetMood = periodicSmile > 0.15 ? 0.52 : -0.42;
+    } else if (sec === 3) {
+      targetMood = 0.58;
     } else {
       targetMood = 0.85;
     }
@@ -1231,6 +1316,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
         rigData.bootSolidClip.constant = hiddenY;
         rigData.bootWireUpperClip.constant = hiddenY;
         rigData.bootWireLowerClip.constant = -hiddenY;
+        rigData.hexBaseMat.uniforms.uOpacity.value = 0;
         rigData.hexOuterMat.opacity = 0;
         rigData.hexInnerMat.opacity = 0;
         if (plinthRef.current) plinthRef.current.scale.setScalar(0.35);
@@ -1248,6 +1334,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
         if (plinthRef.current) {
           plinthRef.current.scale.setScalar(0.35 + 0.65 * plinthEase);
         }
+        rigData.hexBaseMat.uniforms.uOpacity.value = 0.92 * plinthGlow;
         rigData.hexOuterMat.opacity = 0.92 * plinthGlow;
         rigData.hexInnerMat.opacity = 0.9 * plinthGlow;
 
@@ -1328,6 +1415,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
           rigData.xrayWireMat.clippingPlanes = null;
           rigData.xrayWireMat.color.copy(CYAN_MID);
           rigData.xrayWireMat.needsUpdate = true;
+          rigData.hexBaseMat.uniforms.uOpacity.value = 0.92;
           rigData.hexOuterMat.opacity = 0.92;
           rigData.hexInnerMat.opacity = 0.9;
           if (plinthRef.current) plinthRef.current.scale.setScalar(1);
@@ -1452,6 +1540,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
 
         {/* Minimal sharp hexagonal turntable base under Finn's feet */}
         <group ref={plinthRef} rotation={[Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+          <mesh geometry={rigData.hexBaseGeo} material={rigData.hexBaseMat} position={[0, 0, 0.008]} />
           <mesh geometry={rigData.hexOuterGeo} material={rigData.hexOuterMat} />
           <mesh geometry={rigData.hexInnerGeo} material={rigData.hexInnerMat} />
         </group>

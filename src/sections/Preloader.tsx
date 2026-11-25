@@ -182,8 +182,8 @@ export function Preloader({ onComplete }: PreloaderProps) {
           <div className="relative h-2 w-full overflow-hidden border border-[#00f3ff]/25 bg-[#050b14]">
             <div
               ref={progressBarRef}
-              style={{ transform: 'scaleX(0)' }}
-              className="h-full w-full origin-left bg-gradient-to-r from-[#a020f0] via-[#bd00ff] via-35% via-[#00f3ff] to-[#e6fcff] shadow-[0_0_18px_rgba(0,243,255,0.55)] will-change-transform"
+              style={{ transform: 'scaleX(0)', background: 'var(--iridescent-line)' }}
+              className="h-full w-full origin-left shadow-[0_0_14px_rgba(189,0,255,0.45)] will-change-transform"
             />
           </div>
         </div>

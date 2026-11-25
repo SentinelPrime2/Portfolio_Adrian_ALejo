@@ -210,7 +210,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
               `Copiar correo ${ARTIST_INFO.email}`,
               `Copy email ${ARTIST_INFO.email}`,
             )}
-            className="contact-cta-primary tron-glass-btn-violet relative inline-flex min-h-[44px] items-center gap-2.5 overflow-hidden px-7 py-3.5 font-mono text-xs font-bold tracking-[0.12em] uppercase active:scale-[0.97]"
+            className="contact-cta-primary tron-glass-btn-violet obsidian-dichroic-panel dichroic-hover-border relative inline-flex min-h-[44px] items-center gap-2.5 overflow-hidden px-7 py-3.5 font-mono text-xs font-bold tracking-[0.12em] uppercase active:scale-[0.97]"
           >
             <TronWireOverlay variant="violet" withScan />
             {copied ? (

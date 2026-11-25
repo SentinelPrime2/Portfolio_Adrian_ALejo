@@ -22,7 +22,7 @@ import { cn } from '../utils/cn';
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const CARD_SKIN =
-  'tron-glass tron-card-bevel border-[#00f3ff]/[0.22] hover:border-[#bd00ff] hover:shadow-[var(--glow-violet-border)]';
+  'obsidian-dichroic-panel dichroic-hover-border tron-card-bevel border-[#00f3ff]/[0.22] hover:border-[#bd00ff] hover:shadow-[var(--glow-violet-border)]';
 
 interface ShowcaseSectionProps {
   onSelectProject: (project: PortfolioProject) => void;
@@ -355,8 +355,8 @@ export function ShowcaseSection({ onSelectProject }: ShowcaseSectionProps) {
         <div className="showcase-progress-track h-[2px] w-full overflow-hidden bg-[#00f3ff]/15">
           <div
             ref={playheadRef}
-            style={{ transform: 'scaleX(0.04)' }}
-            className="h-full w-full origin-left bg-gradient-to-r from-[#a020f0] via-[#bd00ff] to-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.45)] will-change-transform"
+            style={{ transform: 'scaleX(0.04)', background: 'var(--iridescent-line)' }}
+            className="h-full w-full origin-left shadow-[0_0_10px_rgba(0,243,255,0.45)] will-change-transform"
           />
         </div>
         </div>
