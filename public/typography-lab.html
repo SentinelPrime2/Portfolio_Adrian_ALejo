@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typography Lab // SENTINELPRIME</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Chakra+Petch:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Michroma&family=Orbitron:wght@600;700;800;900&family=Outfit:wght@400;500;600&family=Saira+Condensed:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #07050f;
+        color: #f4f2ff;
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .grid-bg {
+        background-image:
+          linear-gradient(to right, rgba(184, 41, 255, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 229, 255, 0.08) 1px, transparent 1px);
+        background-size: 56px 56px;
+      }
+
+      .chamfer-btn {
+        clip-path: polygon(
+          10px 0,
+          100% 0,
+          100% calc(100% - 10px),
+          calc(100% - 10px) 100%,
+          0 100%,
+          0 10px
+        );
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 28px;
+        background: rgba(7, 5, 15, 0.92);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+      }
+
+      .topbar-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #ffe600;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .controls input {
+        background: #110b22;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 8px 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        width: 240px;
+      }
+
+      .controls input:focus {
+        outline: none;
+        border-color: #ffe600;
+      }
+
+      .back-link {
+        color: #00e5ff;
+        text-decoration: none;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        border: 1px solid rgba(0, 229, 255, 0.45);
+        padding: 8px 14px;
+      }
+
+      .back-link:hover {
+        border-color: #ffe600;
+        color: #ffe600;
+      }
+
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 28px 80px;
+        display: grid;
+        gap: 32px;
+      }
+
+      .intro {
+        max-width: 720px;
+        color: #b7add4;
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      .card {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(11, 7, 24, 0.88);
+        padding: 36px;
+        position: relative;
+        transition: border-color 0.2s ease;
+      }
+
+      .card:hover {
+        border-color: #ffe600;
+      }
+
+      .card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 20px;
+        margin-bottom: 28px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .option-badge {
+        background: #ffe600;
+        color: #07050f;
+        font-weight: 700;
+        padding: 4px 10px;
+      }
+
+      .option-vibe {
+        color: #00e5ff;
+      }
+
+      .font-stack {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: #a79bc8;
+      }
+
+      .sample-eyebrow {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #00e5ff;
+        margin-bottom: 12px;
+      }
+
+      .sample-h1 {
+        margin: 0;
+        line-height: 0.98;
+        text-transform: uppercase;
+        color: #ffffff;
+      }
+
+      .sample-h1 span {
+        display: block;
+        color: #ffe600;
+        margin-top: 6px;
+        text-shadow: 0 0 24px rgba(255, 230, 0, 0.35);
+      }
+
+      .sample-body {
+        margin: 22px 0 26px;
+        max-width: 560px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: #d7d0ee;
+      }
+
+      .sample-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .sample-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .btn-primary {
+        background: #ffe600;
+        color: #07050f;
+        border: none;
+        padding: 13px 26px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: #f4f2ff;
+        border: 1px solid rgba(184, 41, 255, 0.75);
+        padding: 13px 22px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .sample-section-preview {
+        border-left: 2px solid #b829ff;
+        padding-left: 16px;
+      }
+
+      .sample-h2 {
+        margin: 0;
+        font-size: 24px;
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .sample-h2 em {
+        font-style: normal;
+        color: #b829ff;
+      }
+
+      .sample-sub {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: #a79bc8;
+      }
+    </style>
+  </head>
+  <body class="grid-bg">
+    <div class="topbar">
+      <div class="topbar-title">TYPOGRAPHY LAB // SENTINELPRIME</div>
+      <div class="controls">
+        <input
+          id="custom-title"
+          type="text"
+          value="ADRIÁN ALEJO"
+          aria-label="Personalizar titular"
+          placeholder="Escribe tu titular..."
+        />
+        <input
+          id="custom-handle"
+          type="text"
+          value="SENTINELPRIME"
+          aria-label="Personalizar subtítulo"
+          placeholder="Handle..."
+        />
+        <a class="back-link" href="/">← Volver al Portfolio</a>
+      </div>
+    </div>
+
+    <main class="container">
+      <p class="intro">
+        Compara estas <strong>6 direcciones tipográficas</strong> directamente con tu paleta neón y tus textos reales. Puedes editar el titular arriba en tiempo real y decirme qué letra (<strong>A–F</strong>) prefieres aplicar.
+      </p>
+
+      <div id="cards" style="display: grid; gap: 32px;"></div>
+    </main>
+
+    <script>
+      const OPTIONS = [
+        {
+          id: 'OPCIÓN A',
+          vibe: 'Cyber-Arcade · Tron / Sci-Fi Puro',
+          displayName: 'Orbitron',
+          bodyName: 'Space Grotesk',
+          displayCss: "'Orbitron', sans-serif",
+          bodyCss: "'Space Grotesk', sans-serif",
+          h1Size: 'clamp(2.4rem, 5vw, 4.2rem)',
+          h1Weight: 800,
+          letterSpacing: '0.04em',
+          note: 'Ultra-geométrica y ancha. Muy reconocible como retrofuturismo sci-fi clásico.',
+        },
+        {
+          id: 'OPCIÓN B',
+          vibe: 'Estudio Creativo · Awwwards / Editorial',
+          displayName: 'Syne',
+          bodyName: 'Space Grotesk',
+          displayCss: "'Syne', sans-serif",
+          bodyCss: "'Space Grotesk', sans-serif",
+          h1Size: 'clamp(2.6rem, 5.6vw, 4.7rem)',
+          h1Weight: 800,
+          letterSpacing: '-0.02em',
+          note: 'Escultórica, artística y moderna. Destaca muchísimo en portfolios 3D de alto nivel sin parecer cliché gamer.',
+        },
+        {
+          id: 'OPCIÓN C',
+          vibe: 'Hard-Surface Industrial · Cockpit / NASA HUD',
+          displayName: 'Michroma',
+          bodyName: 'Inter',
+          displayCss: "'Michroma', sans-serif",
+          bodyCss: "'Inter', sans-serif",
+          h1Size: 'clamp(2rem, 4.3vw, 3.6rem)',
+          h1Weight: 400,
+          letterSpacing: '0.06em',
+          note: 'Extendida, limpia, minimalista y muy arquitectónica. Encaja increíble con bordes rectos y menos cajas.',
+        },
+        {
+          id: 'OPCIÓN D',
+          vibe: 'Synthwave 80s · Retro-Tech',
+          displayName: 'Audiowide',
+          bodyName: 'Outfit',
+          displayCss: "'Audiowide', sans-serif",
+          bodyCss: "'Outfit', sans-serif",
+          h1Size: 'clamp(2.4rem, 5vw, 4.3rem)',
+          h1Weight: 400,
+          letterSpacing: '0.03em',
+          note: 'Estética retrofuturista directa de sintetizador ochentero con ángulos cortados muy marcados.',
+        },
+        {
+          id: 'OPCIÓN E',
+          vibe: 'Mecha / Blueprint Técnico · Alto Impacto',
+          displayName: 'Saira Condensed',
+          bodyName: 'Space Grotesk',
+          displayCss: "'Saira Condensed', sans-serif",
+          bodyCss: "'Space Grotesk', sans-serif",
+          h1Size: 'clamp(3.2rem, 6.8vw, 5.8rem)',
+          h1Weight: 800,
+          letterSpacing: '0.02em',
+          note: 'Compacta, vertical y contundente. Permite titulares gigantes súper legibles de un vistazo sin ocupar demasiado ancho.',
+        },
+        {
+          id: 'OPCIÓN F (ACTUAL)',
+          vibe: 'Tech-Angular Equilibrada',
+          displayName: 'Chakra Petch',
+          bodyName: 'Space Grotesk',
+          displayCss: "'Chakra Petch', sans-serif",
+          bodyCss: "'Space Grotesk', sans-serif",
+          h1Size: 'clamp(2.7rem, 5.6vw, 4.7rem)',
+          h1Weight: 700,
+          letterSpacing: '0.01em',
+          note: 'La que está activa ahora mismo en la web, para que la compares cara a cara con las anteriores.',
+        },
+      ];
+
+      const container = document.getElementById('cards');
+      const titleInput = document.getElementById('custom-title');
+      const handleInput = document.getElementById('custom-handle');
+
+      function render() {
+        const t = titleInput.value.trim() || 'ADRIÁN ALEJO';
+        const h = handleInput.value.trim() || 'SENTINELPRIME';
+
+        container.innerHTML = OPTIONS.map(
+          (opt) => `
+          <section class="card">
+            <div class="card-header">
+              <div class="card-meta">
+                <span class="option-badge">${opt.id}</span>
+                <span class="option-vibe">${opt.vibe}</span>
+              </div>
+              <div class="font-stack">DISPLAY: ${opt.displayName} · BODY: ${opt.bodyName} · MONO: JetBrains Mono</div>
+            </div>
+
+            <div class="sample-eyebrow">3D RIGGER &amp; ANIMATOR · BLENDER &amp; UNITY</div>
+
+            <h2
+              class="sample-h1"
+              style="font-family:${opt.displayCss}; font-size:${opt.h1Size}; font-weight:${opt.h1Weight}; letter-spacing:${opt.letterSpacing};"
+            >
+              ${t}
+              <span>${h}</span>
+            </h2>
+
+            <p class="sample-body" style="font-family:${opt.bodyCss};">
+              Rigs limpios y animación 3D para que cada personaje cobre vida en tiempo real.
+            </p>
+
+            <div class="sample-row">
+              <div class="sample-actions">
+                <button class="btn-primary chamfer-btn" style="font-family:${opt.displayCss};">
+                  Ver Proyectos ↘
+                </button>
+                <span class="btn-secondary">Contacto</span>
+              </div>
+
+              <div class="sample-section-preview">
+                <div class="sample-h2" style="font-family:${opt.displayCss}; font-weight:${opt.h1Weight};">
+                  RIGGING <em>ANIMATOR-FIRST</em>
+                </div>
+                <p class="sample-sub" style="font-family:${opt.bodyCss};">${opt.note}</p>
+              </div>
+            </div>
+          </section>
+        `,
+        ).join('');
+      }
+
+      titleInput.addEventListener('input', render);
+      handleInput.addEventListener('input', render);
+      render();
+    </script>
+  </body>
+</html>

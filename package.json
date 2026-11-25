@@ -1,0 +1,44 @@
+{
+  "name": "creative-web-engine",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@gsap/react": "latest",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
+    "clsx": "latest",
+    "gsap": "latest",
+    "howler": "latest",
+    "lenis": "latest",
+    "lucide-react": "latest",
+    "matter-js": "latest",
+    "motion": "latest",
+    "postprocessing": "^6.36.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "simplex-noise": "latest",
+    "tailwind-merge": "latest",
+    "three": "latest",
+    "tone": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/howler": "latest",
+    "@types/matter-js": "latest",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "latest",
+    "@vitejs/plugin-react": "latest",
+    "tailwindcss": "^4.3.5",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}
