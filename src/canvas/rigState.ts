@@ -35,6 +35,8 @@ export const rigState = {
 
   /** Behind-the-Scenes Studio Lab State */
   labTab: 'anim' as RigLabTab,
+  /** True while Rig Lab controls are scrolled into view (frames Finn above controls on mobile) */
+  pipelineLabFocused: false,
 
   /** Live Draggable IK Target (normalized -1..1 inside Pipeline center viewport) */
   ikMode: 'hand' as IkLiveMode,

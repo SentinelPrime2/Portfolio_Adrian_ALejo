@@ -33,7 +33,7 @@ export function SoundToggle({ className }: SoundToggleProps) {
       aria-pressed={!isMuted}
       data-cursor="magnetic"
       className={cn(
-        'tron-glass fixed bottom-5 right-5 z-50 inline-flex min-h-[44px] items-center gap-2.5 border border-[#00f3ff]/30 px-4 py-2.5 font-mono text-[11px] font-medium tracking-[0.16em] text-[#ecf8ff] uppercase transition-[transform,border-color,background-color,color,box-shadow] duration-200 hover:border-[#bd00ff] hover:text-[#f5e6ff] hover:shadow-[var(--glow-violet-border)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00f3ff]',
+        'tron-glass fixed bottom-3 right-3 z-50 inline-flex min-h-[40px] items-center gap-2 border border-[#00f3ff]/30 px-3 py-2 font-mono text-[10px] font-medium tracking-[0.14em] text-[#ecf8ff] uppercase transition-[transform,border-color,background-color,color,box-shadow] duration-200 hover:border-[#bd00ff] hover:text-[#f5e6ff] hover:shadow-[var(--glow-violet-border)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00f3ff] sm:bottom-5 sm:right-5 sm:min-h-[44px] sm:gap-2.5 sm:px-4 sm:py-2.5 sm:text-[11px] sm:tracking-[0.16em]',
         className,
       )}
     >

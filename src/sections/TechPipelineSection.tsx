@@ -55,6 +55,7 @@ export function TechPipelineSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const spineRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const rigLabWrapperRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [labTab, setLabTab] = useState<RigLabTab>(rigState.labTab);
@@ -92,6 +93,29 @@ export function TechPipelineSection() {
     () => {
       const section = sectionRef.current;
       if (!section) return;
+
+      if (rigLabWrapperRef.current) {
+        ScrollTrigger.create({
+          trigger: rigLabWrapperRef.current,
+          start: 'top 78%',
+          end: 'bottom 20%',
+          onEnter: () => {
+            rigState.pipelineLabFocused = true;
+          },
+          onEnterBack: () => {
+            rigState.pipelineLabFocused = true;
+          },
+          onLeave: () => {
+            rigState.pipelineLabFocused = false;
+          },
+          onLeaveBack: () => {
+            rigState.pipelineLabFocused = false;
+          },
+          onRefresh: (self) => {
+            rigState.pipelineLabFocused = self.isActive;
+          },
+        });
+      }
 
       if (prefersReducedMotion()) {
         if (spineRef.current) {
@@ -285,9 +309,8 @@ export function TechPipelineSection() {
     audioManager.playSynth('click', 0.85);
   };
 
-  // Interactive 3D IK drag handlers over the open center stage
-  const updateIkFromPointer = (clientX: number, clientY: number) => {
-    const el = stageRef.current;
+  // Interactive 3D IK drag handlers over the open center stage (desktop) or live preview box (mobile)
+  const updateIkFromPointer = (el: HTMLElement | null, clientX: number, clientY: number) => {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const nx = Math.max(-1, Math.min(1, ((clientX - rect.left) / rect.width) * 2 - 1));
@@ -303,12 +326,12 @@ export function TechPipelineSection() {
     setIsDraggingIk(true);
     rigState.ikDragging = true;
     audioManager.playSynth('click', 0.7);
-    updateIkFromPointer(e.clientX, e.clientY);
+    updateIkFromPointer(e.currentTarget, e.clientX, e.clientY);
   };
 
   const handleStagePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (!isDraggingIk || labTab !== 'ik') return;
-    updateIkFromPointer(e.clientX, e.clientY);
+    updateIkFromPointer(e.currentTarget, e.clientX, e.clientY);
   };
 
   const handleStagePointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -380,7 +403,7 @@ export function TechPipelineSection() {
       id="pipeline"
       ref={sectionRef}
       aria-labelledby="pipeline-heading"
-      className="relative z-10 w-full px-5 py-28 sm:px-8 lg:px-12 lg:py-36"
+      className="relative z-10 w-full px-5 py-20 sm:px-8 lg:px-12 lg:py-36"
     >
       <TronCircuitCluster
         variant="hex-bus-b"
@@ -391,7 +414,7 @@ export function TechPipelineSection() {
         {rigAnnouncement}
       </div>
 
-      <div className="mx-auto max-w-7xl space-y-14">
+      <div className="mx-auto max-w-7xl space-y-8 lg:space-y-14">
         {/* Clean Minimal Header */}
         <div className="max-w-xl">
           <span className="pipeline-eyebrow inline-block font-mono text-[11px] tracking-[0.22em] text-[#00f3ff] uppercase">
@@ -409,9 +432,9 @@ export function TechPipelineSection() {
         </div>
 
         {/* 3-Column Stage Layout: Steps (Left 4) · OPEN / DRAGGABLE CENTER STAGE (Center 4) · 4-Tab Rig Lab (Right 4) */}
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
           {/* Left Rail: 4 Clean Open Steps with Cyan Circuit Line & Ultraviolet Nodes */}
-          <div className="relative space-y-9 pl-7 lg:col-span-4">
+          <div className="relative space-y-6 pl-7 lg:col-span-4 lg:space-y-9">
             <div
               aria-hidden="true"
               className="absolute bottom-2 left-2 top-2 w-[1px] bg-[#00f3ff]/[0.18]"
@@ -432,11 +455,11 @@ export function TechPipelineSection() {
                 <span className="pipeline-step-index inline-block font-mono text-[11px] tracking-[0.2em] text-[#00f3ff]">
                   {stage.index}
                 </span>
-                <div className="pipeline-step-content -mx-2 bg-[#020408]/65 p-2 backdrop-blur-[2px] lg:mx-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-                  <h3 className="mt-1 font-display text-base font-bold text-[#ecf8ff] uppercase sm:text-lg">
+                <div className="pipeline-step-content border border-[#00f3ff]/15 bg-[#050b14]/88 p-3.5 backdrop-blur-sm lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+                  <h3 className="mt-0.5 font-display text-base font-bold text-[#ecf8ff] uppercase lg:mt-1 sm:text-lg">
                     {stage.title}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-[#8ba4be]">
+                  <p className="mt-1 text-sm leading-relaxed text-[#8ba4be] lg:mt-1.5">
                     {stage.description}
                   </p>
                 </div>
@@ -471,9 +494,43 @@ export function TechPipelineSection() {
             )}
           </div>
 
-          {/* Right Rail: Obsidian Glass 4-Tab Studio Inspector with 4 HUD Corner Brackets */}
-          <div className="lg:sticky lg:top-24 lg:col-span-4">
-            <div className="rig-lab-console tron-glass relative border border-[#00f3ff]/30 border-t-2 border-t-[#bd00ff] p-5 shadow-[var(--glow-cyan-border)]">
+          {/* Right Rail: Mobile Live 3D Stage + Obsidian Glass 4-Tab Studio Inspector */}
+          <div ref={rigLabWrapperRef} className="space-y-3 lg:sticky lg:top-24 lg:col-span-4 lg:space-y-0">
+            {/* Mobile-only Live 3D Viewport Frame positioned directly above Rig Lab controls */}
+            <div
+              onPointerDown={handleStagePointerDown}
+              onPointerMove={handleStagePointerMove}
+              onPointerUp={handleStagePointerUp}
+              onPointerCancel={handleStagePointerUp}
+              className={cn(
+                'relative flex h-[34svh] min-h-[210px] w-full select-none flex-col justify-between border border-[#00f3ff]/20 bg-transparent p-2.5 lg:hidden',
+                labTab === 'ik'
+                  ? 'pointer-events-auto touch-none border-dashed border-[#00f3ff]/55 bg-[#00f3ff]/[0.03]'
+                  : 'pointer-events-none',
+              )}
+            >
+              <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.14em] text-[#00f3ff]/85 uppercase">
+                <span>FINN // LIVE STAGE</span>
+                <span className="text-[#bd00ff]/90">{labTab.toUpperCase()}</span>
+              </div>
+              {labTab === 'ik' ? (
+                <div className="mx-auto inline-flex items-center gap-1.5 border border-[#00f3ff]/60 bg-[#020408]/85 px-2.5 py-1 font-mono text-[10px] tracking-[0.12em] text-[#e6fcff] uppercase">
+                  <Move className="h-3 w-3 text-[#00f3ff]" aria-hidden="true" />
+                  <span>
+                    {isDraggingIk
+                      ? `TARGET X:${ikPos.x.toFixed(2)} Y:${ikPos.y.toFixed(2)}`
+                      : `Toca y arrastra (${ikMode === 'hand' ? 'HAND_IK' : 'EYE_AIM'})`}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.12em] text-[#8ba4be]/75 uppercase">
+                  <span>VISTA REACTIVA 3D</span>
+                  <span>{xray ? 'X-RAY' : showBones ? 'DEF' : 'SOLID'}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="rig-lab-console tron-glass relative border border-[#00f3ff]/30 border-t-2 border-t-[#bd00ff] p-3.5 shadow-[var(--glow-cyan-border)] sm:p-5">
               <TronWireOverlay variant="dual" withScan />
 
               {/* 4 HUD Corner Brackets */}
@@ -675,13 +732,13 @@ export function TechPipelineSection() {
                     {ikMode === 'hand' ? (
                       <>
                         <span className="hidden lg:inline">Arrastra sobre el viewport central (o usa los ejes)</span>
-                        <span className="lg:hidden">Usa los controles EJE X y EJE Y</span>
+                        <span className="lg:hidden">Arrastra sobre la vista superior (o usa los ejes)</span>
                         {' para mover CTRL_HAND_IK y resolver la cadena de 6 segmentos en tiempo real.'}
                       </>
                     ) : (
                       <>
                         <span className="hidden lg:inline">Arrastra sobre el viewport central (o usa los ejes)</span>
-                        <span className="lg:hidden">Usa los controles EJE X y EJE Y</span>
+                        <span className="lg:hidden">Arrastra sobre la vista superior (o usa los ejes)</span>
                         {' para dirigir los ojos y la cabeza de Finn con líneas de restricción Aim.'}
                       </>
                     )}

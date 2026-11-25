@@ -655,7 +655,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
-    const isNarrow = size.width < 960;
+    const isNarrow = size.width < 1024;
     const motionScale = reducedMotion ? 0 : 1;
 
     if (rigState.scrollVelocity !== 0) {
@@ -712,45 +712,65 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
     const wR = anim.wRun * anim.wPose;
     const p = anim.wPose;
 
-    // 3. Section-aware framing
+    // 3. Section-aware framing (mobile < 1024px keeps Finn clear of UI; desktop >= 1024px unchanged)
     let targetRotY = -0.32;
     if (sec === 0) {
       anim.targetPos.set(
         isNarrow ? 0 : Math.min(viewport.width * 0.27, 2.05),
-        isNarrow ? -1.42 : -1.32,
-        isNarrow ? -0.55 : 0.15,
+        isNarrow ? -1.46 : -1.32,
+        isNarrow ? -0.25 : 0.15,
       );
-      targetRotY = isNarrow ? 0 : -0.34;
+      targetRotY = isNarrow ? -0.18 : -0.34;
     } else if (sec === 1) {
       anim.targetPos.set(
         isNarrow ? 0 : -Math.min(viewport.width * 0.3, 2.45),
         -1.35,
-        -1.85,
+        isNarrow ? -3.8 : -1.85,
       );
       targetRotY = 0.35 + rigState.showcaseProgress * 1.4;
     } else if (sec === 2) {
-      // Dead center in dedicated open middle stage column
-      // If inspecting foot roll or face/tongue in Mechanisms, angle slightly 3/4 so depth reads clearly!
       const mechAngle =
         mechActive && Math.abs(rigState.footRoll) > 0.08
           ? 0.55
           : mechActive && rigState.mouthTongue > 0.1
             ? -0.22
             : 0.04;
-      anim.targetPos.set(0, -1.32, isNarrow ? -0.3 : 0.22);
+      if (isNarrow) {
+        if (rigState.pipelineLabFocused) {
+          // Frame Finn inside the dedicated top preview window above mobile Rig Lab controls
+          anim.targetPos.set(0, 0.28, -0.45);
+        } else {
+          // Tuck Finn gently back while reading pipeline steps 01..04
+          anim.targetPos.set(0, -1.35, -3.2);
+        }
+      } else {
+        anim.targetPos.set(0, -1.32, 0.22);
+      }
       targetRotY = mechAngle;
     } else {
       anim.targetPos.set(
         isNarrow ? 0 : -Math.min(viewport.width * 0.325, 2.22),
-        isNarrow ? -1.45 : -1.36,
-        isNarrow ? -1.45 : -0.3,
+        isNarrow ? 0.36 : -1.36,
+        isNarrow ? -0.45 : -0.3,
       );
-      targetRotY = isNarrow ? 0 : 0.38;
+      targetRotY = isNarrow ? 0.16 : 0.38;
     }
 
     if (rootRef.current) {
-      rootRef.current.position.lerp(anim.targetPos, 1 - Math.exp(-4.0 * dt));
-      const baseScale = isNarrow ? 1.02 : sec === 2 ? 1.54 : sec === 3 ? 1.32 : 1.46;
+      rootRef.current.position.lerp(anim.targetPos, 1 - Math.exp(-4.4 * dt));
+      const baseScale = isNarrow
+        ? sec === 0
+          ? 0.86
+          : sec === 2 && rigState.pipelineLabFocused
+            ? 0.78
+            : sec === 3
+              ? 0.72
+              : 0.76
+        : sec === 2
+          ? 1.54
+          : sec === 3
+            ? 1.32
+            : 1.46;
       const nextScale = THREE.MathUtils.lerp(rootRef.current.scale.x, baseScale, 1 - Math.exp(-4.5 * dt));
       rootRef.current.scale.setScalar(nextScale);
       const effectiveRotY = THREE.MathUtils.lerp(targetRotY, 0.8, wR);
@@ -1693,7 +1713,7 @@ export function RigScene() {
     >
       <CanvasErrorBoundary>
         <Canvas
-          dpr={[1, 1.75]}
+          dpr={isDesktopPost ? [1, 1.75] : [1, 1.5]}
           camera={{ position: [0, 0.25, 5.4], fov: 42 }}
           onCreated={({ gl }) => {
             gl.localClippingEnabled = true;

@@ -141,7 +141,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
       id="contact"
       ref={sectionRef}
       aria-labelledby="contact-heading"
-      className="relative z-10 flex min-h-screen w-full flex-col justify-between overflow-hidden px-5 pb-12 pt-28 sm:px-8 lg:px-12"
+      className="relative z-10 flex min-h-[100svh] w-full flex-col justify-between overflow-hidden px-5 pb-10 pt-20 sm:px-8 lg:min-h-screen lg:px-12 lg:pb-12 lg:pt-28"
     >
       {/* Hex-aligned Tron circuit traces balancing Finn on the open right side */}
       <TronCircuitCluster
@@ -153,22 +153,22 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
       <div
         ref={horizonRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[380px] overflow-hidden opacity-55 will-change-transform"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[320px] overflow-hidden opacity-55 will-change-transform lg:h-[380px]"
       >
         <div className="rf-perspective-grid -ml-[20%] mx-auto h-[500px] w-[140%]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020408] via-transparent to-[#020408]" />
       </div>
 
-      {/* Centered high-impact minimal CTA */}
-      <div className="mx-auto my-auto flex w-full max-w-3xl flex-col items-center space-y-7 bg-[#020408]/68 p-5 text-center backdrop-blur-[2px] lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-        <div className="flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] text-[#00f3ff] uppercase">
-          <span className="contact-status-dot h-2 w-2 animate-pulse bg-[#00f3ff] shadow-[0_0_10px_#00f3ff] motion-reduce:animate-none" />
+      {/* On mobile: Finn waves cleanly in top 36svh above card; on desktop: centered CTA balancing Finn on the left */}
+      <div className="mx-auto mb-auto mt-[35svh] flex w-full max-w-3xl flex-col items-center space-y-5 border border-[#00f3ff]/20 bg-[#040912]/88 p-5 text-center backdrop-blur-[8px] sm:p-6 lg:my-auto lg:space-y-7 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+        <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-[#00f3ff] uppercase sm:gap-2.5 sm:text-[11px] sm:tracking-[0.22em]">
+          <span className="contact-status-dot h-2 w-2 shrink-0 animate-pulse bg-[#00f3ff] shadow-[0_0_10px_#00f3ff] motion-reduce:animate-none" />
           <span className="contact-status-text">DISPONIBLE PARA PROYECTOS · {ARTIST_INFO.location}</span>
         </div>
 
         <h2
           id="contact-heading"
-          className="font-display text-3xl font-bold leading-[1.1] tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-5xl lg:text-[3.5rem]"
+          className="font-display text-[1.75rem] font-bold leading-[1.1] tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-5xl lg:text-[3.5rem]"
         >
           <span className="contact-title-main inline-block">HABLEMOS DE TU</span>{' '}
           <span className="contact-neon-accent inline-block text-[#00f3ff] tron-glow-cyan">
@@ -176,7 +176,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
           </span>
         </h2>
 
-        <p className="contact-desc max-w-lg text-base text-[#8ba4be] sm:text-lg">
+        <p className="contact-desc max-w-lg text-sm text-[#8ba4be] sm:text-base lg:text-lg">
           Character rigging, facial rigs y animación 3D para videojuegos y medios interactivos.
         </p>
 
@@ -262,7 +262,7 @@ export function ContactSection({ onBackToTop }: ContactSectionProps) {
       </div>
 
       {/* Minimal Footer */}
-      <footer className="relative mx-auto mt-16 flex w-full max-w-7xl items-center justify-between border-t border-[#00f3ff]/15 pb-14 pt-5 font-mono text-[11px] tracking-[0.14em] text-[#8ba4be] sm:pb-4 sm:pr-32">
+      <footer className="relative mx-auto mt-10 flex w-full max-w-7xl items-center justify-between border-t border-[#00f3ff]/15 pb-16 pt-4 font-mono text-[11px] tracking-[0.12em] text-[#8ba4be] sm:pb-4 sm:pr-32 lg:mt-16 lg:pt-5 lg:tracking-[0.14em]">
         <span
           aria-hidden="true"
           data-footer-laser=""

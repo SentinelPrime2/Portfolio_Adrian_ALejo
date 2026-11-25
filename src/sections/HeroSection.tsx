@@ -95,7 +95,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
       id="hero"
       ref={sectionRef}
       aria-labelledby="hero-heading"
-      className="relative z-10 flex min-h-screen w-full items-center overflow-hidden px-5 pb-16 pt-24 sm:px-8 lg:px-12"
+      className="relative z-10 flex min-h-[100svh] w-full items-start overflow-hidden px-5 pb-10 pt-20 sm:px-8 lg:min-h-screen lg:items-center lg:px-12 lg:pb-16 lg:pt-24"
     >
       {/* Quiet background hex-aligned Tron circuit traces breaking out of the honeycomb */}
       <TronCircuitCluster
@@ -108,31 +108,31 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
       />
 
       <div ref={contentRef} className="mx-auto w-full max-w-7xl will-change-transform">
-        <div className="-mx-2 max-w-xl space-y-7 bg-[#020408]/65 p-4 backdrop-blur-[2px] lg:mx-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+        <div className="max-w-xl space-y-3.5 sm:space-y-5 lg:space-y-7">
           {/* Role Eyebrow */}
-          <div className="flex items-center gap-3 font-mono text-xs tracking-[0.24em] text-[#00f3ff] uppercase">
-            <span className="hero-dot h-2 w-2 bg-[#00f3ff] shadow-[0_0_10px_#00f3ff]" />
+          <div className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.2em] text-[#00f3ff] uppercase sm:gap-3 sm:text-xs sm:tracking-[0.24em]">
+            <span className="hero-dot h-2 w-2 shrink-0 bg-[#00f3ff] shadow-[0_0_10px_#00f3ff]" />
             <span className="hero-eyebrow-text">3D RIGGER &amp; ANIMATOR · BLENDER &amp; UNITY</span>
           </div>
 
-          {/* Clean Monumental Headline (tuned for Orbitron display) */}
+          {/* Clean Monumental Headline (compact on mobile so Finn renders clear below CTAs) */}
           <h1
             id="hero-heading"
-            className="font-display text-4xl font-bold leading-[1.04] tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-5xl lg:text-[3.75rem]"
+            className="font-display text-[1.9rem] font-bold leading-[1.04] tracking-[0.04em] text-[#ecf8ff] uppercase sm:text-5xl lg:text-[3.75rem]"
           >
             <span className="hero-name-wipe block">{ARTIST_INFO.shortName}</span>
-            <span className="hero-neon-handle mt-2 block text-[#00f3ff] tron-glow-cyan">
+            <span className="hero-neon-handle mt-1.5 block text-[#00f3ff] tron-glow-cyan lg:mt-2">
               {ARTIST_INFO.handle}
             </span>
           </h1>
 
           {/* One clear sentence — no extra box */}
-          <p className="hero-tagline-wipe max-w-md text-lg leading-relaxed text-[#8ba4be] sm:text-xl">
+          <p className="hero-tagline-wipe max-w-md text-sm leading-relaxed text-[#8ba4be] sm:text-lg lg:text-xl">
             {ARTIST_INFO.tagline}
           </p>
 
           {/* Two sharp Tron Obsidian Glass CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-1 lg:gap-4 lg:pt-2">
             <button
               type="button"
               data-cursor="magnetic"
@@ -141,7 +141,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
                 audioManager.playSynth('click', 0.9);
                 onNavigate('showcase');
               }}
-              className="hero-cta-primary tron-glass-btn-cyan group relative inline-flex items-center gap-2.5 overflow-hidden px-7 py-3.5 font-display text-sm font-bold tracking-[0.14em] uppercase active:scale-[0.97]"
+              className="hero-cta-primary tron-glass-btn-cyan group relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 py-2.5 font-display text-xs font-bold tracking-[0.14em] uppercase active:scale-[0.97] lg:gap-2.5 lg:px-7 lg:py-3.5 lg:text-sm"
             >
               <TronWireOverlay variant="cyan" withScan />
               <span>Ver Proyectos</span>
@@ -159,7 +159,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
                 audioManager.playSynth('click', 0.85);
                 onNavigate('contact');
               }}
-              className="hero-cta-secondary tron-glass relative inline-flex items-center gap-2 overflow-hidden border border-[#bd00ff]/45 px-6 py-3.5 font-mono text-xs font-medium tracking-[0.16em] text-[#ecf8ff] uppercase transition-[border-color,color,box-shadow] duration-200 hover:border-[#bd00ff] hover:text-[#f5e6ff] hover:shadow-[var(--glow-violet-border)] active:scale-[0.97]"
+              className="hero-cta-secondary tron-glass relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden border border-[#bd00ff]/45 px-5 py-2.5 font-mono text-xs font-medium tracking-[0.16em] text-[#ecf8ff] uppercase transition-[border-color,color,box-shadow] duration-200 hover:border-[#bd00ff] hover:text-[#f5e6ff] hover:shadow-[var(--glow-violet-border)] active:scale-[0.97] lg:px-6 lg:py-3.5"
             >
               <TronWireOverlay variant="violet" withScan />
               <span aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-1.5 w-1.5 border-l border-t border-[#00f3ff]" />

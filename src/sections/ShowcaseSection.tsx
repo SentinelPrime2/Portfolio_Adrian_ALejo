@@ -185,20 +185,27 @@ export function ShowcaseSection() {
       });
 
       mm.add('(max-width: 1023px) and (prefers-reduced-motion: no-preference)', () => {
-        const mobileCardsTl = gsap.timeline({ paused: true });
-
-        cards.forEach((card, idx) => {
-          animateCardInit(card, mobileCardsTl, idx * 0.1);
+        const revealedMobile = cards.map(() => false);
+        const mobileCardTls = cards.map((card) => {
+          const tl = gsap.timeline({ paused: true });
+          animateCardInit(card, tl, 0);
+          return tl;
         });
 
-        createOnceScrollTrigger(mobileCardsTl, {
-          trigger: section,
-          start: 'top 80%',
+        cards.forEach((card, idx) => {
+          createOnceScrollTrigger(mobileCardTls[idx], {
+            trigger: card,
+            start: 'top 88%',
+            onPlay: () => {
+              revealedMobile[idx] = true;
+            },
+          });
         });
 
         revealCardRef.current = (idx: number) => {
-          if (!reduced && cards[idx]) {
-            mobileCardsTl.progress(1);
+          if (!reduced && !revealedMobile[idx]) {
+            revealedMobile[idx] = true;
+            mobileCardTls[idx]?.play(0);
           }
         };
       });
@@ -265,7 +272,7 @@ export function ShowcaseSection() {
       id="showcase"
       ref={sectionRef}
       aria-labelledby="showcase-heading"
-      className="relative z-10 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 lg:py-0"
+      className="relative z-10 flex min-h-[100svh] w-full flex-col justify-center overflow-hidden py-20 lg:min-h-screen lg:py-0"
     >
       <TronCircuitCluster
         variant="hex-bus-c"
@@ -304,17 +311,17 @@ export function ShowcaseSection() {
         </span>
       </div>
 
-      {/* Horizontal Track — Real Rookies 4:3 Thumbnails, Obsidian Glass + 12px Bevel */}
-      <div className="w-full overflow-x-auto pb-4 lg:overflow-visible lg:pb-0">
+      {/* Vertical Grid on mobile (< lg); Horizontal Pinned Track on desktop (lg+) */}
+      <div className="w-full lg:overflow-visible">
         <div
           ref={trackRef}
-          className="flex w-max items-stretch gap-7 px-5 sm:px-8 lg:gap-9 lg:px-12 will-change-transform"
+          className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-5 sm:grid-cols-2 sm:px-8 lg:mx-0 lg:flex lg:w-max lg:max-w-none lg:items-stretch lg:gap-9 lg:px-12 will-change-transform"
         >
           {PORTFOLIO_PROJECTS.map((project, idx) => (
             <article
               key={project.id}
               className={cn(
-                'showcase-card group relative flex w-[310px] shrink-0 flex-col border transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1.5 sm:w-[390px] lg:w-[430px]',
+                'showcase-card group relative flex w-full shrink-0 flex-col border bg-[#060d18]/92 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1.5 lg:w-[430px]',
                 CARD_SKIN,
               )}
             >
