@@ -1,7 +1,7 @@
 export type ProjectContentBlock =
   | { type: 'heading'; text: string; level?: 2 | 3 }
   | { type: 'paragraph'; text: string; bold?: boolean }
-  | { type: 'image'; src: string; hiResSrc?: string; alt?: string }
+  | { type: 'image'; src: string; hiResSrc?: string; alt?: string; variant?: 'banner' | 'default' }
   | { type: 'gif'; src: string; alt?: string }
   | {
       type: 'gallery';
@@ -46,7 +46,7 @@ export interface PipelineStage {
 export const ARTIST_INFO = {
   name: 'Adrián Alejo Molina',
   shortName: 'ADRIÁN ALEJO',
-  handle: 'SENTINELPRIME',
+  handle: 'SENTINEL PRIME',
   role: '3D Rigger & Animator',
   location: 'España',
   locationEn: 'Spain',
@@ -94,6 +94,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     blocks: [
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/327194/INTRO-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/327194/3840xAUTO/INTRO-SentinelPrime.png',
@@ -111,6 +112,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/293024/RIG%20ARCH-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/293024/3840xAUTO/RIG%20ARCH-SentinelPrime.png',
@@ -159,6 +161,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/721506/WEIGHT-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/721506/3840xAUTO/WEIGHT-SentinelPrime.png',
@@ -196,6 +199,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/093935/CONTROLLERS-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/093935/3840xAUTO/CONTROLLERS-SentinelPrime.png',
@@ -243,6 +247,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/689154/IK_FK-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/689154/3840xAUTO/IK_FK-SentinelPrime.png',
@@ -270,6 +275,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/163508/TWEAK-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/163508/3840xAUTO/TWEAK-SentinelPrime.png',
@@ -307,6 +313,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/961685/FACIAL-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/961685/3840xAUTO/FACIAL-SentinelPrime.png',
@@ -334,6 +341,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/696607/NAMING-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-04/696607/3840xAUTO/NAMING-SentinelPrime.png',
@@ -426,6 +434,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     blocks: [
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/911171/BANNER_1-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/911171/3840xAUTO/BANNER_1-SentinelPrime.png',
@@ -448,6 +457,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/799730/BANNER_2-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/799730/3840xAUTO/BANNER_2-SentinelPrime.png',
@@ -477,6 +487,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/451171/BANNER_3-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/451171/3840xAUTO/BANNER_3-SentinelPrime.png',
@@ -517,6 +528,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/268635/BANNER_4-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/268635/3840xAUTO/BANNER_4-SentinelPrime.png',
@@ -603,6 +615,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       },
       {
         type: 'image',
+        variant: 'banner',
         src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/558626/BANNER_5-SentinelPrime.png',
         hiResSrc:
           'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-10/558626/3840xAUTO/BANNER_5-SentinelPrime.png',

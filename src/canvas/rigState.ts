@@ -1,5 +1,5 @@
 export type RigAnimationPreset = 'idle' | 'wave' | 'run' | 'tpose';
-export type RigLabTab = 'anim' | 'ik' | 'weights' | 'mech';
+export type RigLabTab = 'anim' | 'ik' | 'mech';
 export type IkLiveMode = 'hand' | 'eye';
 export type WeightPaintZone = 'none' | 'head' | 'torso' | 'armL' | 'hands' | 'legs' | 'face';
 

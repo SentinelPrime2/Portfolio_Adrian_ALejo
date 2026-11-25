@@ -98,7 +98,7 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
         <button
           type="button"
           data-cursor="magnetic"
-          aria-label={t('SentinelPrime — Ir al inicio', 'SentinelPrime — Back to top')}
+          aria-label={t('Sentinel Prime — Ir al inicio', 'Sentinel Prime — Back to top')}
           onPointerEnter={() => audioManager.playSynth('hover', 0.55)}
           onClick={() => navigateFromMenu('hero')}
           className="flex min-h-[44px] items-center gap-2 text-left sm:gap-2.5"
@@ -110,7 +110,7 @@ export function HudOverlay({ activeSection, onNavigate, ready = true }: HudOverl
             SP
           </span>
           <span className="hud-brand-text font-display text-[11px] font-bold tracking-[0.16em] text-[#ecf8ff] uppercase sm:text-sm sm:tracking-[0.22em]">
-            SENTINELPRIME
+            SENTINEL PRIME
           </span>
         </button>
 

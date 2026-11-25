@@ -117,7 +117,7 @@ export function HeroSection({ ready, onNavigate }: HeroSectionProps) {
           {/* Role Eyebrow */}
           <div className="flex items-center gap-2.5 font-mono text-[10px] tracking-[0.2em] text-[#00f3ff] uppercase sm:gap-3 sm:text-xs sm:tracking-[0.24em]">
             <span className="hero-dot h-2 w-2 shrink-0 bg-[#00f3ff] shadow-[0_0_10px_#00f3ff]" />
-            <span className="hero-eyebrow-text">3D RIGGER &amp; ANIMATOR · BLENDER &amp; UNITY</span>
+            <span className="hero-eyebrow-text">3D RIGGER &amp; ANIMATOR</span>
           </div>
 
           {/* Clean Monumental Headline (compact on mobile so Finn renders clear below CTAs) */}

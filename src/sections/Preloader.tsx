@@ -159,9 +159,9 @@ export function Preloader({ onComplete }: PreloaderProps) {
       <div className="rf-scanlines pointer-events-none absolute inset-0 opacity-45" />
 
       <div className="preloader-inner relative z-10 w-full max-w-md space-y-6">
-        <span className="sr-only">Cargando portfolio de SentinelPrime</span>
+        <span className="sr-only">Cargando portfolio de Sentinel Prime</span>
         <div className="preloader-reveal flex items-center justify-between font-mono text-[11px] tracking-[0.2em] text-[#00f3ff] uppercase">
-          <span>RIG-OS // SENTINELPRIME</span>
+          <span>RIG-OS // SENTINEL PRIME</span>
           <span className="text-[#8ba4be]">BLENDER · UNITY</span>
         </div>
 

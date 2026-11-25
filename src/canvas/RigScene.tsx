@@ -1244,35 +1244,86 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
     const smile = Math.max(0, m);
     const serious = Math.max(0, -m);
     const faceAlpha = 1 - Math.exp(-7.5 * dt);
-    const tongueAmt = anim.wMech * rigState.mouthTongue;
+    const mouthVal = anim.wMech * rigState.mouthTongue;
 
-    const cornerY = smile * 0.02 - serious * 0.008;
-    const cornerX = smile * 0.009 - serious * 0.003;
+    // Two-stage synchronized mouth + tongue kinematics:
+    // Stage 1 (0 -> 0.55): mouth opens into a wide clean rounded arch first
+    // Stage 2 (0.18 -> 1.0): 18-bone tongue glides smoothly through the cleared mouth cavity
+    const mouthOpenStage = THREE.MathUtils.clamp(mouthVal * 1.65, 0, 1);
+    const tongueOut = THREE.MathUtils.clamp((mouthVal - 0.16) / 0.84, 0, 1);
+
+    const cornerY = smile * 0.018 - serious * 0.008 - mouthOpenStage * 0.012;
+    const cornerX = smile * 0.009 - serious * 0.003 + mouthOpenStage * 0.007;
     offsetBonePos('DEF_LIP_CORNER.L', cornerX, cornerY, 0, faceAlpha);
     offsetBonePos('DEF_LIP_CORNER.R', -cornerX, cornerY, 0, faceAlpha);
 
-    offsetBonePos('DEF_LIP_UPPER_03.L', cornerX * 0.6, cornerY * 0.7 + tongueAmt * 0.008, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_UPPER_03.R', -cornerX * 0.6, cornerY * 0.7 + tongueAmt * 0.008, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_LOWER_03.L', cornerX * 0.6, cornerY * 0.55 - tongueAmt * 0.012, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_LOWER_03.R', -cornerX * 0.6, cornerY * 0.55 - tongueAmt * 0.012, 0, faceAlpha);
+    // Wide rounded upper-lip arch lift
+    offsetBonePos(
+      'DEF_LIP_UPPER_03.L',
+      cornerX * 0.6,
+      cornerY * 0.65 + mouthOpenStage * 0.016,
+      0,
+      faceAlpha,
+    );
+    offsetBonePos(
+      'DEF_LIP_UPPER_03.R',
+      -cornerX * 0.6,
+      cornerY * 0.65 + mouthOpenStage * 0.016,
+      0,
+      faceAlpha,
+    );
+    offsetBonePos(
+      'DEF_LIP_UPPER_02.L',
+      0,
+      smile * 0.005 + mouthOpenStage * 0.024,
+      -mouthOpenStage * 0.004,
+      faceAlpha,
+    );
+    offsetBonePos(
+      'DEF_LIP_UPPER_02.R',
+      0,
+      smile * 0.005 + mouthOpenStage * 0.024,
+      -mouthOpenStage * 0.004,
+      faceAlpha,
+    );
+    offsetBonePos(
+      'DEF_LIP_UPPER_01',
+      0,
+      smile * 0.006 + mouthOpenStage * 0.028,
+      -mouthOpenStage * 0.005,
+      faceAlpha,
+    );
 
-    offsetBonePos('DEF_LIP_UPPER_02.L', 0, smile * 0.005 + tongueAmt * 0.01, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_UPPER_02.R', 0, smile * 0.005 + tongueAmt * 0.01, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_UPPER_01', 0, smile * 0.006 + tongueAmt * 0.014, 0, faceAlpha);
+    // Wide lower-lip clearance: drops lower lip well below tongue bottom (minY 1.469 vs 1.460)
+    const lowerDrop = Math.max(0, smile - 0.45) * 0.016 + mouthOpenStage * 0.068;
+    offsetBonePos('DEF_LIP_LOWER_01', 0, -lowerDrop, -mouthOpenStage * 0.006, faceAlpha);
+    offsetBonePos('DEF_LIP_LOWER_02.L', 0, -lowerDrop * 0.84, -mouthOpenStage * 0.005, faceAlpha);
+    offsetBonePos('DEF_LIP_LOWER_02.R', 0, -lowerDrop * 0.84, -mouthOpenStage * 0.005, faceAlpha);
+    offsetBonePos(
+      'DEF_LIP_LOWER_03.L',
+      cornerX * 0.55,
+      cornerY * 0.45 - lowerDrop * 0.56,
+      -mouthOpenStage * 0.003,
+      faceAlpha,
+    );
+    offsetBonePos(
+      'DEF_LIP_LOWER_03.R',
+      -cornerX * 0.55,
+      cornerY * 0.45 - lowerDrop * 0.56,
+      -mouthOpenStage * 0.003,
+      faceAlpha,
+    );
 
-    const openMouth = Math.max(0, smile - 0.4) * 0.022 + tongueAmt * 0.032;
-    offsetBonePos('DEF_LIP_LOWER_01', 0, -openMouth, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_LOWER_02.L', 0, -openMouth * 0.68, 0, faceAlpha);
-    offsetBonePos('DEF_LIP_LOWER_02.R', 0, -openMouth * 0.68, 0, faceAlpha);
-
-    // Real 18-bone tongue chain extension & playful curl when CTRL_TONGUE_STRETCH slider > 0!
+    // Real 18-bone tongue emerges cleanly inside the open mouth cavity without intersecting lower lip
     for (let idx = 1; idx <= 6; idx++) {
-      const zExt = tongueAmt * idx * 0.014;
-      const yDrop = -tongueAmt * idx * 0.004;
-      const waveX = tongueAmt * Math.sin(anim.breathPhase * 2.2 - idx * 0.4) * 0.004 * idx;
-      offsetBonePos(`DEF_TONGUE_${idx}`, waveX, yDrop, zExt, faceAlpha);
-      offsetBonePos(`DEF_TONGUE_${idx}.L`, waveX, yDrop, zExt, faceAlpha);
-      offsetBonePos(`DEF_TONGUE_${idx}.R`, waveX, yDrop, zExt, faceAlpha);
+      const zExt = tongueOut * idx * 0.0125;
+      const yClearance =
+        mouthOpenStage * 0.006 - tongueOut * Math.max(0, idx - 3) * 0.0028;
+      const waveX =
+        tongueOut * Math.sin(anim.breathPhase * 2.2 - idx * 0.4) * 0.0035 * idx;
+      offsetBonePos(`DEF_TONGUE_${idx}`, waveX, yClearance, zExt, faceAlpha);
+      offsetBonePos(`DEF_TONGUE_${idx}.L`, waveX, yClearance, zExt, faceAlpha);
+      offsetBonePos(`DEF_TONGUE_${idx}.R`, waveX, yClearance, zExt, faceAlpha);
     }
 
     const blinkCycle = anim.blinkClock % 4.2;
@@ -1438,7 +1489,7 @@ function FinnCharacterRig({ reducedMotion }: { reducedMotion: boolean }) {
     const targetXray = rigState.xrayMode ? 1 : 0;
     const targetBones = rigState.xrayMode || rigState.showBones ? 1 : 0;
     const targetCtrl = rigState.showWidgets || rigState.labTab === 'ik' || rigState.labTab === 'mech' ? 1 : 0;
-    const activeWeightZone: WeightPaintZone = rigState.labTab === 'weights' ? rigState.weightZone : 'none';
+    const activeWeightZone: WeightPaintZone = rigState.weightZone;
     const targetWeight = activeWeightZone !== 'none' ? 1 : 0;
     const targetIkGizmo = ikHandActive || ikEyeActive ? 1 : 0;
 

@@ -2,7 +2,7 @@ import { type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPoi
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { Bone, Box, Crosshair, Eye, Flame, Move, RotateCcw, Sliders } from 'lucide-react';
+import { Bone, Box, Crosshair, Eye, Move, RotateCcw, Sliders } from 'lucide-react';
 import { CORE_TOOLS, PIPELINE_STAGES } from '../data/portfolio';
 import {
   rigState,
@@ -11,7 +11,6 @@ import {
   type IkLiveMode,
   type RigAnimationPreset,
   type RigLabTab,
-  type WeightPaintZone,
 } from '../canvas/rigState';
 import { audioManager } from '../audio/AudioManager';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -46,23 +45,7 @@ const PRESETS: {
 const LAB_TABS: { id: RigLabTab; label: string }[] = [
   { id: 'anim', label: 'ANIM' },
   { id: 'ik', label: 'IK LIVE' },
-  { id: 'weights', label: 'WEIGHTS' },
   { id: 'mech', label: 'MECH' },
-];
-
-const WEIGHT_ZONES: {
-  id: WeightPaintZone;
-  label: string;
-  labelEn: string;
-  bonesInfo: string;
-  bonesInfoEn: string;
-}[] = [
-  { id: 'head', label: 'CABEZA', labelEn: 'HEAD', bonesInfo: 'DEF_HEAD · DEF_NECK · DEF_EAR.L/R', bonesInfoEn: 'DEF_HEAD · DEF_NECK · DEF_EAR.L/R' },
-  { id: 'torso', label: 'TORSO', labelEn: 'TORSO', bonesInfo: 'DEF_HIPS · DEF_TORSO_01..03', bonesInfoEn: 'DEF_HIPS · DEF_TORSO_01..03' },
-  { id: 'armL', label: 'BRAZO IZQ.', labelEn: 'LEFT ARM', bonesInfo: '6 segmentos DEF_UPPER_ARM / FOREARM.L', bonesInfoEn: '6 segments DEF_UPPER_ARM / FOREARM.L' },
-  { id: 'hands', label: 'MANOS', labelEn: 'HANDS', bonesInfo: 'DEF_HAND · PALM · FINGER_A..D (L/R)', bonesInfoEn: 'DEF_HAND · PALM · FINGER_A..D (L/R)' },
-  { id: 'legs', label: 'PIERNAS', labelEn: 'LEGS', bonesInfo: 'DEF_UPPER/LOWER_LEG · FOOT · TOES', bonesInfoEn: 'DEF_UPPER/LOWER_LEG · FOOT · TOES' },
-  { id: 'face', label: 'BOCA / LENGUA', labelEn: 'MOUTH / TONGUE', bonesInfo: '18 DEF_TONGUE + 12 DEF_LIP + EYES', bonesInfoEn: '18 DEF_TONGUE + 12 DEF_LIP + EYES' },
 ];
 
 export function TechPipelineSection() {
@@ -95,9 +78,6 @@ export function TechPipelineSection() {
   const [ikMode, setIkMode] = useState<IkLiveMode>(rigState.ikMode);
   const [ikPos, setIkPos] = useState({ x: rigState.ikTargetX, y: rigState.ikTargetY });
   const [isDraggingIk, setIsDraggingIk] = useState(false);
-
-  // Real Weight Paint Heatmap state
-  const [weightZone, setWeightZone] = useState<WeightPaintZone>('head');
 
   // Mechanisms Lab state
   const [handGrip, setHandGrip] = useState(rigState.handGrip);
@@ -240,13 +220,7 @@ export function TechPipelineSection() {
     setLabTab(tab);
     rigState.labTab = tab;
     rigState.activeSection = 2;
-    if (tab === 'weights') {
-      const zone = weightZone === 'none' ? 'head' : weightZone;
-      setWeightZone(zone);
-      rigState.weightZone = zone;
-    } else {
-      rigState.weightZone = 'none';
-    }
+    rigState.weightZone = 'none';
     const label = LAB_TABS.find((tabItem) => tabItem.id === tab)?.label ?? tab;
     setRigAnnouncement(
       t(`Modo ${label} activado en Rig Lab`, `${label} mode activated in Rig Lab`),
@@ -384,17 +358,6 @@ export function TechPipelineSection() {
     audioManager.playSynth('click', 0.8);
   };
 
-  const selectWeightZone = (zone: WeightPaintZone) => {
-    setWeightZone(zone);
-    rigState.weightZone = zone;
-    const found = WEIGHT_ZONES.find((z) => z.id === zone);
-    const label = found ? (locale === 'en' ? found.labelEn : found.label) : zone;
-    setRigAnnouncement(
-      t(`Mapa de pesos seleccionado: ${label}`, `Weight map selected: ${label}`),
-    );
-    audioManager.playSynth('click', 0.8);
-  };
-
   const resetRig = () => {
     setLabTab('anim');
     setPreset('idle');
@@ -404,7 +367,6 @@ export function TechPipelineSection() {
     setShowWidgets(false);
     setShowBones(false);
     setIkMode('hand');
-    setWeightZone('head');
     setHandGrip(0.25);
     setFootRoll(0);
     setMouthTongue(0);
@@ -429,8 +391,6 @@ export function TechPipelineSection() {
     );
     audioManager.playSynth('click', 0.8);
   };
-
-  const activeWeightMeta = WEIGHT_ZONES.find((z) => z.id === weightZone) ?? WEIGHT_ZONES[0];
 
   return (
     <section
@@ -602,11 +562,11 @@ export function TechPipelineSection() {
                 </button>
               </div>
 
-              {/* 4 Studio Mode Tabs */}
+              {/* 3 Studio Mode Tabs */}
               <div
                 role="tablist"
                 aria-label={t('Modos del Rig Lab', 'Rig Lab modes')}
-                className="mt-3.5 grid grid-cols-4 border border-[#00f3ff]/20 bg-[#050b14]/70"
+                className="mt-3.5 grid grid-cols-3 border border-[#00f3ff]/20 bg-[#050b14]/70"
               >
                 {LAB_TABS.map((t, idx) => {
                   const active = labTab === t.id;
@@ -861,63 +821,7 @@ export function TechPipelineSection() {
                 </div>
               )}
 
-              {/* TAB 3: REAL BLENDER WEIGHT PAINTING HEATMAP */}
-              {labTab === 'weights' && (
-                <div
-                  role="tabpanel"
-                  id="rig-panel-weights"
-                  aria-labelledby="rig-tab-weights"
-                  className="mt-4 space-y-4"
-                >
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {WEIGHT_ZONES.map((z) => {
-                      const active = weightZone === z.id;
-                      return (
-                        <button
-                          key={z.id}
-                          type="button"
-                          aria-pressed={active}
-                          data-cursor="pointer"
-                          onPointerEnter={() => audioManager.playSynth('hover', 0.5)}
-                          onClick={() => selectWeightZone(z.id)}
-                          className={cn(
-                            'min-h-[42px] border px-2.5 py-2 text-left font-mono text-[11px] font-semibold tracking-[0.1em] uppercase transition-colors',
-                            active
-                              ? 'border-[#00f3ff] bg-[#00f3ff]/[0.18] text-[#e6fcff] shadow-[var(--glow-cyan-border)]'
-                              : 'border-[#00f3ff]/20 bg-[#050b14]/70 text-[#8ba4be] hover:border-[#00f3ff]/50 hover:text-[#ecf8ff]',
-                          )}
-                        >
-                          {locale === 'en' ? z.labelEn : z.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Exact Blender Weight Paint Spectrum Legend */}
-                  <div className="space-y-1.5 border border-[#00f3ff]/20 bg-[#020408]/85 p-3">
-                    <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.12em] text-[#8ba4be] uppercase">
-                      <span className="inline-flex items-center gap-1 text-[#00f3ff]">
-                        <Flame className="h-3 w-3" aria-hidden="true" />
-                        BLENDER WEIGHT PAINT REAL
-                      </span>
-                      <span>0.0 → 1.0</span>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      className="h-2 w-full"
-                      style={{
-                        background:
-                          'linear-gradient(90deg, #081466 0%, #00c8ff 25%, #00f05a 50%, rgb(255, 230, 0) 75%, #ff1e1e 100%)',
-                      }}
-                    />
-                    <div className="font-mono text-[10px] text-[#ecf8ff]/90">
-                      {locale === 'en' ? activeWeightMeta.bonesInfoEn : activeWeightMeta.bonesInfo}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: CUSTOM RIG MECHANISMS FROM FINN_ANTIGRAVITY.blend */}
+              {/* TAB 3: CUSTOM RIG MECHANISMS */}
               {labTab === 'mech' && (
                 <div
                   role="tabpanel"
@@ -928,10 +832,7 @@ export function TechPipelineSection() {
                   <div className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.1em] text-[#00f3ff] uppercase">
                     <Sliders className="h-3.5 w-3.5" aria-hidden="true" />
                     <span>
-                      {t(
-                        'Mecanismos de FINN_ANTIGRAVITY.blend',
-                        'FINN_ANTIGRAVITY.blend Mechanisms',
-                      )}
+                      {t('MECANISMOS DEL RIG', 'RIG MECHANISMS')}
                     </span>
                   </div>
 

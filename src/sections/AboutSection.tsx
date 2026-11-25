@@ -109,8 +109,8 @@ export function AboutSection() {
       ),
       school: 'Florida Universitària · Valencia',
       detail: t(
-        'Rigging modular de personajes, skinning, Blend Shapes e integración de animación jugable en Unity.',
-        'Modular character rigging, skinning, Blend Shapes, and gameplay animation integration in Unity.',
+        'Formación multidisciplinar centrada en el desarrollo de videojuegos: dibujo, diseño, programación, arte 3D, animación y rigging.',
+        'Multidisciplinary game development education spanning drawing, design, programming, 3D art, animation, and rigging.',
       ),
       accent: 'cyan' as const,
     },
@@ -122,8 +122,8 @@ export function AboutSection() {
       ),
       school: 'Universidad Rey Juan Carlos · Madrid',
       detail: t(
-        'Base física en biomecánica, equilibrio, arcos e inercia aplicada directamente al body mechanics 3D.',
-        'Hands-on foundation in biomechanics, balance, arcs, and momentum applied directly to 3D body mechanics.',
+        'Trabajo en teatralidad, presencia en escena, danza, formación y preparación física, y colaboración en equipo dentro de compañías.',
+        'Hands-on work in theatricality, stage presence, dance, physical training and conditioning, and teamwork within performing companies.',
       ),
       accent: 'violet' as const,
     },
@@ -196,7 +196,7 @@ export function AboutSection() {
                 <div aria-hidden="true" className="rf-scanlines pointer-events-none absolute inset-0 opacity-45" />
 
                 <span className="pointer-events-none absolute left-2.5 top-2.5 border border-[#00f3ff]/55 bg-[#020408]/88 px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] text-[#e6fcff] uppercase">
-                  ID // SENTINELPRIME
+                  ID // SENTINEL PRIME
                 </span>
               </div>
 
@@ -235,14 +235,14 @@ export function AboutSection() {
               <div className="space-y-4 text-sm leading-relaxed text-[#b8cce0] sm:text-base">
                 <p>
                   {t(
-                    'Soy Adrián Alejo Molina (SentinelPrime), 3D Character Rigger y Animador afincado en Valencia. Me especializo en construir armaduras limpias, deformaciones fiables y controles intuitivos pensados para que animar personajes en tiempo real entre Blender y Unity 6 sea ágil y expresivo.',
-                    "I'm Adrián Alejo Molina (SentinelPrime), a 3D Character Rigger & Animator based in Valencia, Spain. I specialize in building clean armatures, reliable deformation, and animator-first control systems designed for expressive real-time performance across Blender and Unity 6.",
+                    'Soy Adrián Alejo Molina, 3D Character Rigger y Animador residente en Valencia. Me especializo en construir armaduras limpias, deformaciones fiables y controles intuitivos pensados para que animar personajes en tiempo real entre Blender y Unity 6 sea ágil y expresivo.',
+                    "I'm Adrián Alejo Molina, a 3D Character Rigger & Animator residing in Valencia, Spain. I specialize in building clean armatures, reliable deformation, and animator-first control systems designed for expressive real-time performance across Blender and Unity 6.",
                   )}
                 </p>
                 <p>
                   {t(
-                    'Antes de dar el salto al diseño y desarrollo de videojuegos en Florida Universitària, me gradué en Danzas Acrobáticas y Circenses en la Universidad Rey Juan Carlos (Madrid). Esa base física marca mi forma de riggear y animar: comprendo el peso, el centro de gravedad, las líneas de acción y los límites articulares primero desde el movimiento real, y luego los traslado a cada hueso, pivote e IK.',
-                    "Before moving into Video Game Design & Development at Florida Universitària, I graduated in Acrobatic & Circus Arts at Universidad Rey Juan Carlos (Madrid). That physical discipline shapes how I rig and animate: I understand weight, center of gravity, motion arcs, and joint mechanics in the real body first — then translate them cleanly into every bone, pivot, and IK solver.",
+                    'Antes de dar el salto al diseño y desarrollo de videojuegos en Florida Universitària, me gradué en Danzas Acrobáticas y Circenses en la Universidad Rey Juan Carlos (Madrid). Esa base física marca mi forma de riggear y animar: comprendo el peso, el centro de gravedad, las líneas de acción y los límites articulares primero desde el movimiento real —la biomecánica del movimiento humano—, y luego lo traslado a cada hueso, pivote e IK.',
+                    "Before moving into Video Game Design & Development at Florida Universitària, I graduated in Acrobatic & Circus Arts at Universidad Rey Juan Carlos (Madrid). That physical discipline shapes how I rig and animate: I understand weight, center of gravity, motion arcs, and joint limits from real movement first —the biomechanics of human motion— before translating them into every bone, pivot, and IK solver.",
                   )}
                 </p>
               </div>

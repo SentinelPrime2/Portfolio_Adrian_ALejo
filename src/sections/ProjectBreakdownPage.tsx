@@ -444,6 +444,19 @@ function BreakdownBlockRenderer({
       );
 
     case 'image':
+      if (block.variant === 'banner') {
+        return (
+          <div className="my-2 w-full">
+            <img
+              src={block.src}
+              alt={block.alt ?? projectTitle}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full object-contain"
+            />
+          </div>
+        );
+      }
       return (
         <button
           type="button"
