@@ -11,6 +11,18 @@ export type ProjectContentBlock =
   | { type: 'embed'; src: string; title: string }
   | { type: 'video'; src: string };
 
+export type ProjectGroupId = 'rigging' | 'animation' | 'other';
+
+export interface ProjectCategoryGroup {
+  id: ProjectGroupId;
+  code: string;
+  title: string;
+  titleEn: string;
+  description: string;
+  descriptionEn: string;
+  accent: 'cyan' | 'violet' | 'iridescent';
+}
+
 export interface PortfolioProject {
   id: string;
   index: string;
@@ -19,6 +31,7 @@ export interface PortfolioProject {
   subtitle: string;
   subtitleEn: string;
   category: string;
+  group: ProjectGroupId;
   year: string;
   publishedDate: string;
   software: string[];
@@ -66,6 +79,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Character & Facial Rig en Blender',
     subtitleEn: 'Character & Facial Rig in Blender',
     category: '3D RIGGING',
+    group: 'rigging',
     year: '2026',
     publishedDate: '4 Sep 2026',
     software: ['Blender', 'Rigging', 'Weight Painting', 'Facial Rig'],
@@ -406,6 +420,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Esculpido, Retopología y Rig Facial',
     subtitleEn: 'Sculpting, Retopology & Facial Rig',
     category: 'FACIAL RIG',
+    group: 'rigging',
     year: '2026',
     publishedDate: '10 Sep 2026',
     software: ['Blender', 'RetopoFlow', 'Blend Shapes'],
@@ -649,6 +664,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Rigging y Ciclos Jugables en Unity',
     subtitleEn: 'Rigging & Playable Cycles in Unity',
     category: 'GAMEPLAY ANIM',
+    group: 'animation',
     year: '2026',
     publishedDate: '14 Aug 2026',
     software: ['Blender', 'Unity 3D', 'Skinning'],
@@ -771,6 +787,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Animación Sci-Fi y Body Mechanics',
     subtitleEn: 'Sci-Fi Animation & Body Mechanics',
     category: 'ANIMATION REEL',
+    group: 'animation',
     year: '2026',
     publishedDate: '18 Jan 2026',
     software: ['Blender', '3D Animation'],
@@ -848,6 +865,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Lookdev y Materiales Neón Sci-Fi',
     subtitleEn: 'Lookdev & Sci-Fi Neon Materials',
     category: 'LOOKDEV',
+    group: 'other',
     year: '2026',
     publishedDate: '14 Jan 2026',
     software: ['Adobe Substance 3D Painter', 'Blender'],
@@ -946,6 +964,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     subtitle: 'Pipeline Modular de Animación Real-Time',
     subtitleEn: 'Modular Real-Time Animation Pipeline',
     category: 'UNITY 6',
+    group: 'other',
     year: '2026',
     publishedDate: '18 Jan 2026',
     software: ['Unity 6', 'Blender', 'Unity 3D'],
@@ -1009,6 +1028,138 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
         alt: 'Mobile Gameplay Final Visual',
       },
     ],
+  },
+  {
+    id: 'alchemy-table',
+    index: '07',
+    title: 'Alchemy Table — Hand-Painted',
+    fullTitle: 'Alchemy Table - Hand-Painted Texturing',
+    subtitle: 'Texturizado Hand-Painted y Lookdev',
+    subtitleEn: 'Hand-Painted Texturing & Lookdev',
+    category: 'TEXTURING',
+    group: 'other',
+    year: '2026',
+    publishedDate: '14 Jan 2026',
+    software: ['Substance 3D Painter', 'Blender'],
+    tags: ['Hand-Painted', 'Texturing', 'Substance Painter', 'Blender'],
+    accent: 'yellow',
+    thumbnail:
+      'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-13/395859/800xAUTO/ALQUIMIA_THUMBNAIL-SentinelPrime-crop.png',
+    thumbnailHiRes:
+      'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-08-13/395859/1400xAUTO/ALQUIMIA_THUMBNAIL-SentinelPrime-crop.png',
+    summary:
+      'Ejercicio de texturizado hand-painted en Substance Painter e iluminación atmosférica con simulación de humo en Blender.',
+    summaryEn:
+      'A 3D texturing exercise exploring hand-painted materials and atmospheric presentation with custom lighting in Blender.',
+    fullDescription:
+      'A 3D texturing exercise exploring hand-painted materials and atmospheric presentation.',
+    highlights: [
+      'Pintura manual de materiales en Substance Painter sin depender de shaders PBR',
+      'Tablero de referencias cromáticas para madera, cristal y metales estilizados',
+      'Iluminación atmosférica y simulación de humo integradas en Blender',
+    ],
+    highlightsEn: [
+      'Manual brush-painted textures in Substance Painter without relying on PBR materials',
+      'Color & stylized material reference study across wood, glass, and metal props',
+      'Custom atmospheric lighting and smoke simulation composited in Blender',
+    ],
+    blocks: [
+      { type: 'paragraph', text: 'First study', bold: true },
+      {
+        type: 'paragraph',
+        text: 'Here are some references I gathered when I was thinking about the style I wanted to achieve!',
+      },
+      {
+        type: 'image',
+        src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-11/178997/1400xAUTO/Captura%20de%20pantalla%202026-09-11%20222424-SentinelPrime.png',
+        hiResSrc:
+          'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-11/178997/3840xAUTO/Captura%20de%20pantalla%202026-09-11%20222424-SentinelPrime.png',
+        alt: 'Alchemy Table Style & Color Reference Board',
+      },
+      {
+        type: 'paragraph',
+        text: 'Hand-painted texturing study focused on creating the materials and surface details of an alchemy table.',
+        bold: true,
+      },
+      {
+        type: 'paragraph',
+        text: 'Every texture was painted manually in Substance Painter, using different brushes and hand-painted techniques rather than relying on PBR materials.',
+      },
+      {
+        type: 'image',
+        src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/507958/1400xAUTO/Render_1-SentinelPrime.png',
+        hiResSrc:
+          'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/507958/3840xAUTO/Render_1-SentinelPrime.png',
+        alt: 'Alchemy Table Hand-Painted Surface Study',
+      },
+      {
+        type: 'paragraph',
+        text: 'Final presentation of the hand-painted asset.',
+        bold: true,
+      },
+      {
+        type: 'paragraph',
+        text: 'The textures were brought together with custom lighting and a smoke simulation in Blender to create the final atmosphere and presentation.',
+      },
+      {
+        type: 'image',
+        src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/668787/1400xAUTO/Render_2-SentinelPrime.png',
+        hiResSrc:
+          'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/668787/3840xAUTO/Render_2-SentinelPrime.png',
+        alt: 'Alchemy Table Atmospheric Render with Smoke Simulation',
+      },
+      {
+        type: 'image',
+        src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/724572/1400xAUTO/Render_3-SentinelPrime.png',
+        hiResSrc:
+          'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-01-14/724572/3840xAUTO/Render_3-SentinelPrime.png',
+        alt: 'Alchemy Table Final Detail Render',
+      },
+      { type: 'heading', text: 'THANK YOU' },
+      {
+        type: 'image',
+        src: 'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-11/062277/1400xAUTO/ALQUIMIA_THUMBNAIL-SentinelPrime.png',
+        hiResSrc:
+          'https://d3stdg5so273ei.cloudfront.net/SentinelPrime/2026-09-11/062277/3840xAUTO/ALQUIMIA_THUMBNAIL-SentinelPrime.png',
+        alt: 'Alchemy Table Final Hero Presentation',
+      },
+    ],
+  },
+];
+
+export const PROJECT_CATEGORIES: ProjectCategoryGroup[] = [
+  {
+    id: 'rigging',
+    code: 'CAT_01 // RIGGING',
+    title: 'RIGGING',
+    titleEn: 'RIGGING',
+    description:
+      'Rigs corporales y faciales animator-first, skinning limpio y deformación en tiempo real.',
+    descriptionEn:
+      'Animator-first body & facial rigs, clean skinning, and real-time deformation.',
+    accent: 'cyan',
+  },
+  {
+    id: 'animation',
+    code: 'CAT_02 // ANIMATION',
+    title: 'ANIMACIÓN',
+    titleEn: 'ANIMATION',
+    description:
+      'Mecánicas corporales, actuación en plano y ciclos jugables integrados en motor.',
+    descriptionEn:
+      'Body mechanics, action performance, and playable gameplay cycles in engine.',
+    accent: 'violet',
+  },
+  {
+    id: 'other',
+    code: 'CAT_03 // OTHER',
+    title: 'OTROS PROYECTOS',
+    titleEn: 'OTHER PROJECTS',
+    description:
+      'Texturizado hand-painted, lookdev PBR y pipelines modulares en Unity 6.',
+    descriptionEn:
+      'Hand-painted texturing, PBR lookdev, and modular real-time pipelines in Unity 6.',
+    accent: 'iridescent',
   },
 ];
 
